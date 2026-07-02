@@ -37,6 +37,12 @@ score  = max(5, 100 - 5 x burden)
 Interpretation: one high finding costs 15 points; a domain with three highs and
 a handful of mediums is already down at ~30.
 
+### Weights are v1 heuristics
+
+The 3 / 1 / 0.25 weights and the 5-point cost are calibrated judgment, not
+measurement. Scores are **computed indicators for triage and for diffing
+against your next checkup** — do not read two-digit precision into them.
+
 ## 3. Score → grade
 
 | Grade | Score | Checkup label (en / ja) | Meaning |
@@ -46,6 +52,12 @@ a handful of mediums is already down at ~30.
 | C | 55-79 | Watch / 要経過観察 | schedule a cleanup |
 | D | 25-54 | Needs work / 要精密検査 | plan concrete fixes |
 | E | 0-24 | Treat now / 要治療 | fix before it bites |
+
+Two overrides apply after the arithmetic:
+
+- Any **high-severity finding** caps the domain grade at **C** (a domain with a
+  verified high finding is never "healthy" or "minor findings")
+- Any **critical finding** forces the domain grade to **E** (section 4)
 
 ## 4. Red flags (override the arithmetic)
 
@@ -65,8 +77,11 @@ Standing red-flag list (extend as needed):
 
 ```text
 overall_score = mean(domain scores)   # rounded
-overall_grade = grade(overall_score), capped at C if any system is E
+overall_grade = grade(overall_score); capped at C when any system is E
 ```
+
+Systems with no scanned domain are **not measured**: they get no score, render
+as such, and are excluded from the mean and the radar.
 
 The dashboard shows: overall grade + score, a 10-axis radar chart of the domain
 scores, the body map with per-organ grade badges, and a RED FLAGS box listing

@@ -14,9 +14,36 @@ SEV_RANK = {"high": 0, "medium": 1, "low": 2}
 GRADE_ORDER = ["A", "B", "C", "D", "E"]
 
 
+SEV_W = {"high": 3, "medium": 1, "low": 0.25}
+EFF_OK = {"low", "medium", "high"}
+
+
+def normalize(data):
+    """Coerce LLM-generated JSON into safe shape: unknown enums, missing keys,
+    stringly-typed numbers. One pass at the boundary so rendering never crashes."""
+    for dom in data.get("domains", []) or []:
+        for f in dom.get("findings", []) or []:
+            if f.get("severity") not in SEV_W:
+                f["severity"] = "medium"
+            if f.get("effort") not in EFF_OK:
+                f["effort"] = "medium"
+    ck = data.get("checkup") or {}
+    for sy in ck.get("systems", []) or []:
+        if sy.get("score") is not None:
+            try:
+                sy["score"] = max(0, min(100, int(float(str(sy["score"])))))
+            except (ValueError, TypeError):
+                sy["score"] = None
+        if sy.get("grade") not in (None, "A", "B", "C", "D", "E"):
+            sy["grade"] = None
+    if ck.get("overall") not in (None, "A", "B", "C", "D", "E"):
+        ck["overall"] = None
+    return data
+
+
 def compute_score(findings):
     """0-100 health score from a domain's findings (severity-weighted burden)."""
-    burden = sum({"high": 3, "medium": 1, "low": 0.25}[f["severity"]] for f in findings)
+    burden = sum(SEV_W[f["severity"]] for f in findings)
     return max(5, round(100 - 5 * burden))
 
 
@@ -53,7 +80,7 @@ LABELS = {
         "risk": {"safe": "safe", "careful": "careful", "surgery": "surgery"},
         "domains_t": "All {n} findings by domain",
         "domains_d": "Each finding pairs evidence with a proposal. Nothing has been executed.",
-        "fact": "Evidence", "rec": "Proposal",
+        "fact": "Evidence", "rec": "Proposal", "unmeasured": "not measured",
         "counts": ("high", "med", "low"),
         "expand": "Expand all", "collapse": "Collapse all",
         "footer_note": "read-only audit / no changes before approval",
@@ -79,7 +106,7 @@ LABELS = {
         "risk": {"safe": "安全", "careful": "要注意", "surgery": "手術"},
         "domains_t": "全指摘 {n}件（領域別）",
         "domains_d": "各指摘は「事実」と「提案」のペア。提案は未実行。",
-        "fact": "事実", "rec": "提案",
+        "fact": "事実", "rec": "提案", "unmeasured": "未測定（スコアなし）",
         "counts": ("高", "中", "低"),
         "expand": "すべて展開", "collapse": "すべて閉じる",
         "footer_note": "read-only 監査・承認前変更なし",
@@ -261,8 +288,9 @@ pre.tree{font-family:"SF Mono",Menlo,monospace;font-size:12px;line-height:1.75;
   border-top:1px dashed var(--line);padding-top:8px;margin-top:2px}
 .gbadge{width:44px;height:44px;display:flex;align-items:center;justify-content:center;
   font-family:"Helvetica Neue",Inter,sans-serif;font-size:24px;font-weight:800}
-.g-A{background:var(--teal);color:#fff}
+.g-A{border:2px solid var(--teal);color:var(--teal);background:rgba(11,125,163,.07)}
 .g-B{border:2px solid var(--teal);color:var(--teal)}
+.g-N{border:2px dashed var(--line);color:var(--faint)}
 .g-C{border:2px solid var(--ink);color:var(--ink)}
 .g-D{border:2px solid var(--orange);color:var(--orange)}
 .g-E{background:var(--orange);color:#fff}
@@ -358,8 +386,8 @@ def build(data):
     # header + stats
     stats_html = "".join(
         f'<div class="stat {esc(s.get("tone", "key"))}">'
-        f'<div class="num">{esc(s["n"])}<small>{esc(s.get("unit", ""))}</small></div>'
-        f'<div class="lab">{esc(s["label"])}</div></div>'
+        f'<div class="num">{esc(s.get("n", ""))}<small>{esc(s.get("unit", ""))}</small></div>'
+        f'<div class="lab">{esc(s.get("label", ""))}</div></div>'
         for s in data.get("stats", []))
     meta_html = "".join(
         f'<span><b>{esc(k)}</b>{esc(v)}</span>'
@@ -379,30 +407,42 @@ def build(data):
         red_flags = list(ck.get("red_flags", []))
         for i, sy in enumerate(systems):
             dom = dom_by_name.get(sy.get("domain", ""))
-            if dom is None and i < len(data.get("domains", [])):
+            if dom is None and len(systems) == len(data.get("domains", [])):
                 dom = data["domains"][i]
             findings = dom.get("findings", []) if dom else []
-            if sy.get("score") is None:
-                sy["score"] = compute_score(findings) if findings else 85
-            if not sy.get("grade"):
+            if sy.get("score") is None and dom is not None:
+                sy["score"] = compute_score(findings)
+            if not sy.get("grade") and sy.get("score") is not None:
                 sy["grade"] = grade_from_score(sy["score"])
-                if findings and has_red_flag(findings):
-                    sy["grade"] = "E"
+                if findings:
+                    if has_red_flag(findings):
+                        sy["grade"] = "E"
+                    elif any(f["severity"] == "high" for f in findings) \
+                            and sy["grade"] in ("A", "B"):
+                        sy["grade"] = "C"
+        measured = [sy for sy in systems if sy.get("score") is not None]
         overall_score = ck.get("overall_score")
-        if overall_score is None and systems:
-            overall_score = round(sum(sy["score"] for sy in systems) / len(systems))
-        overall = ck.get("overall") or grade_from_score(overall_score or 85)
-        if any(sy["grade"] == "E" for sy in systems) and overall in ("A", "B"):
+        if overall_score is None and measured:
+            overall_score = round(sum(sy["score"] for sy in measured) / len(measured))
+        overall = ck.get("overall") or (
+            grade_from_score(overall_score) if overall_score is not None else "C")
+        if any(sy.get("grade") == "E" for sy in systems) and overall in ("A", "B"):
             overall = "C"
 
         def chip(sy):
-            g = sy["grade"]
+            g = sy.get("grade")
+            if g is None:
+                organ = (f'<div class="organ">{esc(sy["organ"])}</div>'
+                         if sy.get("organ") else "")
+                return (f'<div class="sys"><div class="gbadge g-N">&#8212;</div><div>'
+                        f'{organ}<div class="dn">{esc(sy.get("domain", ""))}</div>'
+                        f'<div class="gl">{esc(L["unmeasured"])}</div></div></div>')
             organ = (f'<div class="organ">{esc(sy["organ"])}</div>'
                      if sy.get("organ") else "")
             return (f'<div class="sys"><div class="gbadge g-{g}">{g}</div><div>'
                     f'{organ}'
                     f'<div class="dn">{esc(sy.get("domain", ""))}</div>'
-                    f'<div class="gl">{esc(L["grades"][g])}<i>{sy["score"]}/100</i></div></div>'
+                    f'<div class="gl">{esc(L["grades"].get(g, g))}<i>{sy["score"]}/100</i></div></div>'
                     + (f'<div class="note">{esc(sy["note"])}</div>' if sy.get("note") else "")
                     + '</div>')
 
@@ -428,11 +468,11 @@ def build(data):
                        + "<br>".join(esc(r) for r in red_flags) + "</div>")
         body = (f'<div class="overallrow"><div><div class="ol">{esc(L["overall"])}</div>'
                 f'<div class="og"><b>{esc(overall)}</b>'
-                f'<span>{esc(L["grades"][overall])}</span></div>'
+                f'<span>{esc(L["grades"].get(overall, overall))}</span></div>'
                 f'<div class="oscore">{overall_score if overall_score is not None else ""}'
                 f'{" / 100" if overall_score is not None else ""}</div></div>'
                 f'<p>{esc(ck.get("comment", ""))}</p>'
-                f'<div class="radar">{radar_svg(systems)}</div></div>'
+                f'<div class="radar">{radar_svg(measured)}</div></div>'
                 + rf_html
                 + (f'<div class="bodymap"><div class="syscol">{left}</div>'
                    f'<div class="figure">{svg}</div>'
@@ -446,9 +486,9 @@ def build(data):
         n += 1
         body = "".join(
             f'<div class="decision"><div class="dnum">{i + 1}</div><div>'
-            f'<h3>{esc(d["q"])}</h3><p class="why">{esc(d.get("why", ""))}</p>'
+            f'<h3>{esc(d.get("q", ""))}</h3><p class="why">{esc(d.get("why", ""))}</p>'
             f'<div class="opts">' + "".join(
-                f'<div class="opt"><b>{esc(o["tag"])}</b>{esc(o["body"])}</div>'
+                f'<div class="opt"><b>{esc(o.get("tag", ""))}</b>{esc(o.get("body", ""))}</div>'
                 for o in d.get("options", [])) + "</div></div></div>"
             for i, d in enumerate(data["decisions"]))
         parts.append(section(n, L["decisions_t"], L["decisions_d"], body))
@@ -456,9 +496,9 @@ def build(data):
     if data.get("top"):
         n += 1
         body = '<div class="toplist">' + "".join(
-            f'<div class="topitem"><div><h3>{esc(t["title"])}'
+            f'<div class="topitem"><div><h3>{esc(t.get("title", ""))}'
             + (f'<span class="tag">{esc(t["tag"])}</span>' if t.get("tag") else "")
-            + f'</h3><p>{esc(t["body"])}</p></div></div>'
+            + f'</h3><p>{esc(t.get("body", ""))}</p></div></div>'
             for t in data["top"]) + "</div>"
         parts.append(section(n, L["top_t"], L["top_d"], body))
 
@@ -467,7 +507,7 @@ def build(data):
         body = '<div class="mgrid">' + "".join(
             f'<div class="mcell{" prime" if c.get("prime") else ""}'
             f'{" skip" if c.get("skip") else ""}">'
-            f'<h3><span>{esc(key)} ・ {esc(c["title"])}</span></h3>'
+            f'<h3><span>{esc(key)} ・ {esc(c.get("title", ""))}</span></h3>'
             f'<p class="when">{esc(c.get("when", ""))}</p><ul>'
             + "".join(f"<li>{esc(i)}</li>" for i in c.get("items", []))
             + "</ul></div>"
@@ -507,7 +547,7 @@ def build(data):
     if data.get("phases"):
         n += 1
         body = "".join(
-            f'<div class="phase"><div class="pname">{esc(p["name"])}'
+            f'<div class="phase"><div class="pname">{esc(p.get("name", ""))}'
             f'<small>{esc(p.get("when", ""))}</small></div><div><ol>'
             + "".join(f"<li>{esc(s)}</li>" for s in p.get("steps", []))
             + "</ol>"
@@ -519,7 +559,7 @@ def build(data):
     if data.get("trees"):
         n += 1
         body = '<div class="maprow">' + "".join(
-            f'<div><h3>{esc(t["title"])}</h3><pre class="tree">{esc(t["body"])}</pre></div>'
+            f'<div><h3>{esc(t.get("title", ""))}</h3><pre class="tree">{esc(t.get("body", ""))}</pre></div>'
             for t in data["trees"]) + "</div>"
         parts.append(section(n, L["trees_t"], L["trees_d"], body))
 
@@ -542,7 +582,7 @@ def build(data):
                 f'<p class="flabel">{L["rec"]}</p><p>{esc(f["recommendation"])}</p></div></details>'
                 for f in fs)
             doms.append(
-                f'<details class="domain"><summary><span class="dname">{esc(d["name"])}</span>'
+                f'<details class="domain"><summary><span class="dname">{esc(d.get("name", ""))}</span>'
                 f'<span class="dsub">{esc(d.get("sub", ""))}</span>'
                 f'<span class="dcounts"><em>{c["high"]}</em> {L["counts"][0]} / {c["medium"]} '
                 f'{L["counts"][1]} / {c["low"]} {L["counts"][2]}</span></summary>'
@@ -559,7 +599,7 @@ def build(data):
         f'<footer><span>{esc(meta.get("footer", "claude-code-doctor"))}</span>'
         f'<span>{L["footer_note"]}</span></footer>')
 
-    return (f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
+    return (f'<!DOCTYPE html><html lang="{esc(meta.get("lang", "en"))}"><head><meta charset="UTF-8">'
             f'<meta name="viewport" content="width=device-width, initial-scale=1.0">'
             f'<title>{esc(meta.get("title", "環境監査"))}</title><style>{CSS}</style></head>'
             f'<body><div class="wrap">{"".join(parts)}</div>'
@@ -570,7 +610,7 @@ def main():
     if len(sys.argv) != 3:
         print(__doc__)
         sys.exit(1)
-    data = json.load(open(sys.argv[1]))
+    data = normalize(json.load(open(sys.argv[1])))
     out = build(data)
     open(sys.argv[2], "w").write(out)
     print(f"OK {sys.argv[2]} ({len(out):,} bytes)")

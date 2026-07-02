@@ -7,7 +7,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-0B7DA3.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-0B7DA3.svg)](https://github.com/kgraph57/claude-code-doctor/pulls)
 [![Made with Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-E8801A.svg)](https://claude.com/claude-code)
-[![GitHub stars](https://img.shields.io/github/stars/kgraph57/claude-code-doctor?style=social)](https://github.com/kgraph57/claude-code-doctor/stargazers)
 
 <h3>I let Claude Code audit its own setup.<br>It came back with 104 findings.</h3>
 
@@ -30,7 +29,7 @@ Claude Code setups grow like gardens. Every skill you add, every permission you 
 | Skills with colliding trigger words | several clusters across **70** skills |
 | Reclaimable disk found along the way | **~200 GB** |
 
-Your setup is different. That's the point — you won't know until you look. This skill makes looking cheap, safe, and honestly kind of fun.
+Your setup is different. That's the point — you won't know until you look. Linters audit your code; nothing audits the AI-workspace layer — the context tax, the permission sediment, the agent fleet. That's the layer this tool examines. It makes looking cheap, safe, and honestly kind of fun.
 
 An unhealthy setup means an unhealthy AI: bloated with config it drags into every session, slow to start, prone to weird moves. You are raising this thing — keep it fit.
 
@@ -47,9 +46,12 @@ The whole trick is one separation: **diagnosis is strictly read-only, treatment 
 ## Quick start
 
 ```bash
-git clone https://github.com/kgraph57/claude-code-doctor.git
-ln -s "$(pwd)/claude-code-doctor" ~/.claude/skills/claude-code-doctor
+git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/claude-code-doctor
 ```
+
+One command: cloning straight into your skills directory is the whole install
+(`~/.claude/skills/` exists on any machine where Claude Code has run; prefer
+keeping repos elsewhere? clone anywhere and symlink instead).
 
 Then, inside Claude Code:
 
@@ -59,7 +61,9 @@ audit my claude code setup, read-only. no changes before I approve.
 
 or simply `/doctor`. The skill first confirms the scan scope and your **no-go paths** (folders the AI must never read — personal documents, keys, patient data), then fans out.
 
-> Requirements: none for the audit and Markdown report. The HTML dashboard uses only the Python standard library. Share-card PNGs (optional) need headless Chrome + Pillow.
+> Requirements: none for the audit and Markdown report. The HTML dashboard uses only the Python standard library. Share-card PNGs (optional) need headless Chrome/Chromium + Pillow.
+>
+> **Linux**: the audit and dashboard work as-is (domain 9 swaps launchd for cron/systemd timers; `plutil` checks are macOS-only). Share cards work with Chromium. **Windows**: not yet tuned — see roadmap.
 
 ## What you get
 
@@ -97,11 +101,11 @@ Ten domains, each with an explicit checklist you can review (and veto) before th
 
 ## Safety by design
 
-- **Read-only by prompt contract** — the mutation ban is baked into every subagent prompt
+- **Read-only by prompt contract** — the mutation ban is baked into every subagent prompt. Be clear about what that means: it is an instruction-level contract, not an OS sandbox. For hard guarantees, pair it with Claude Code permission deny rules; the skill treats a firing guard as a stop signal, never something to route around
 - **No-go paths** — folders you designate are never read, not even traversed
 - **Secrets are never quoted** — path and existence only
 - **Nothing is deleted** — fixes quarantine files with a manifest; deletion comes weeks later
-- **Nothing leaves your machine** — no telemetry, no uploads; share cards are opt-in and sanitized (paths auto-masked)
+- **Nothing leaves your machine** — no telemetry, no uploads; share cards are opt-in and sanitized (emails, API-key shapes, tokens, UUIDs and user paths auto-masked, and rendering **fails closed** if anything secret-shaped survives). The masking is a seatbelt, not a guarantee — glance at a card before you post it
 - If a permission guard blocks a fix, the skill stops and reports instead of routing around it
 
 ## The principles baked in
@@ -133,24 +137,34 @@ Patient zero (a two-year-old heavy setup) took about 12 minutes with 10 parallel
 </details>
 
 <details>
+<summary><b>What does the audit itself cost?</b></summary>
+Patient zero (a two-year heavy setup, 10 parallel subagents) consumed roughly one million tokens end to end — a few dollars at API prices, or a meaningful chunk of a subscription session. The sequential fallback spends less at once but takes longer. A tool that flags your cost leaks should disclose its own price tag.
+</details>
+
+<details>
+<summary><b>Can I run it in a locked-down corporate environment?</b></summary>
+Everything runs locally inside your own Claude Code session; the skill adds no network calls and no telemetry of its own. It respects your permission settings — if your deny rules block a probe, the auditor reports the gap instead of working around it.
+</details>
+
+<details>
 <summary><b>Does it work in Japanese?</b></summary>
 Yes — reports and the dashboard follow your language (<code>meta.lang: "en" | "ja"</code>). The skill itself is bilingual-triggered.
 </details>
 
 ## Roadmap
 
-- [ ] Health score (0-100) with letter grade on the dashboard
-- [ ] Windows / Linux path coverage (currently tuned for macOS)
-- [ ] Diff mode: compare against your last checkup
+- [x] Health score (0-100), A-E grades, radar chart, red flags — shipped
+- [ ] Demo GIF / 60-second video walkthrough
+- [ ] Diff mode: compare against your last checkup (the real point of a checkup)
+- [ ] Windows path coverage (Linux mostly works today; see Quick start note)
 - [ ] CI mode: fail a PR when the always-on token tax crosses a budget
+- [ ] Community domain packs: add your own checks via a references/ drop-in
 
-Contributions welcome — issues and PRs, in English or Japanese.
+Contributions welcome — issues and PRs, in English or Japanese. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Star history
+## If this helped
 
-[![Star History Chart](https://api.star-history.com/svg?repos=kgraph57/claude-code-doctor&type=Date)](https://star-history.com/#kgraph57/claude-code-doctor&Date)
-
-If this saved you tokens, money, or a weekend of cleanup, a ⭐ helps other people find it.
+If it saved you tokens, money, or a weekend of cleanup, a ⭐ helps other people find it — and an issue with your overall grade helps calibrate the scoring model.
 
 ## License
 

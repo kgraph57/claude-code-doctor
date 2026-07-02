@@ -11,7 +11,7 @@ You are one auditor on a Claude Code setup-audit team. Operate strictly READ-ONL
 
 【Absolutely forbidden】
 - Any mutating operation: Write/Edit/mkdir/mv/rm/touch/git commit etc.
-  Allowed: read-only commands (ls/find/du/wc/head/grep/cat/stat/plutil -p/
+  Allowed: read-only commands (ls/find/du/wc/head/grep/cat/stat/plutil -p [macOS]/
   git status/log/ls-files) and the Read/Grep/Glob tools.
 - User-designated no-go paths: {EXCLUDED_PATHS}. Never enter, read, or traverse
   them with find.
@@ -23,6 +23,9 @@ You are one auditor on a Claude Code setup-audit team. Operate strictly READ-ONL
 
 【Output】Findings need concrete paths and evidence. Report only verified facts,
 never guesses. Proposals are proposals — do not execute them.
+Mark findings that expose secrets or put private data at risk (plaintext keys,
+private files tracked by git, absent guardrails) with "critical": true — they
+drive the red-flag grade override.
 ```
 
 ## Domain 1: Directory structure (home)
@@ -108,7 +111,8 @@ Checks:
 ## Domain 9: Automations and git hygiene
 
 Checks:
-- launchd/cron/scheduler inventory: does every referenced script exist / zombies
+- launchd/cron/scheduler inventory (macOS: launchctl + plutil -p; Linux:
+  crontab -l + systemctl --user list-timers): does every referenced script exist / zombies
   pointing at vanished paths (failing silently every day) / backup plists that could
   be accidentally re-enabled / logs growing without rotation
 - Orphan scripts called by nothing

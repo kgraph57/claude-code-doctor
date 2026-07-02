@@ -12,11 +12,17 @@
       "severity": "high | medium | low",
       "effort": "low | medium | high",
       "detail": "evidence: paths, sizes, counts, quotes",
-      "recommendation": "concrete fix proposal (not executed)"
+      "recommendation": "concrete fix proposal (not executed)",
+      "critical": false
     }
   ]
 }
 ```
+
+- `critical: true` marks red-flag findings (plaintext secrets, private data one
+  commit from public, absent guardrails). Any critical finding forces the
+  domain's checkup grade to E regardless of score — so auditors MUST set it
+  when the evidence warrants.
 
 - severity = impact on daily efficiency, safety, and cost
 - effort = cost of fixing
@@ -50,8 +56,8 @@
           "items": ["..."], "prime": true},
     "B": {"title": "high impact x mid effort", "when": "this week", "items": ["..."]},
     "C": {"title": "high impact x high effort", "when": "plan it", "items": ["..."]},
-    "D": {"title": "low impact / not worth it", "when": "while passing by",
-          "items": ["..."], "skip": true}
+    "D": {"title": "low impact x low effort / not worth it",
+          "when": "while passing by", "items": ["..."], "skip": true}
   },
   "phases": [{"name": "Phase 1", "when": "30 min, stop the bleeding",
               "steps": ["..."], "note": "optional"}],
@@ -98,16 +104,21 @@ verify → delete later.
     "overall_score": 35,       
     "red_flags": ["critical finding 1", "critical finding 2"],
     "systems": [
-      {"organ": "Brain", "domain": "CLAUDE.md hierarchy",
+      {"organ": "Brain (optional)", "short": "CLAUDE.md",
+       "domain": "CLAUDE.md hierarchy",
        "grade": "D", "score": 18, "note": "optional one-liner"}
     ]
   }
 }
 ```
 
-- `systems[]`: first half renders left of the figure, second half right.
-  `grade`/`score` are optional — computed from the matching `domains[]` entry
-  (by name, falling back to index) per `scoring.md`.
+- `systems[]`: first half renders left, second half right. `short` labels the
+  radar axis when `organ` is omitted. `grade`/`score` are optional — computed
+  from the matching `domains[]` entry (matched by name; index fallback only
+  when counts are equal) per `scoring.md`.
+- A system with no matching domain renders as **not measured** (no score, no
+  grade) and is excluded from the radar and the overall mean — never a default
+  passing grade.
 - Findings may carry `"critical": true` — any critical finding forces that
   domain's grade to E (red-flag override).
 - `red_flags[]`: strings shown in the RED FLAGS box.

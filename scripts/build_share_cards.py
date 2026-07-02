@@ -33,7 +33,10 @@ CHROME_CANDIDATES = [
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "/Applications/Chromium.app/Contents/MacOS/Chromium",
     "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium",
     "/usr/bin/chromium-browser",
+    "/snap/bin/chromium",
 ]
 
 CSS = """
@@ -87,7 +90,7 @@ ol.steps li div small{display:block;font-size:23px;color:#5c6166;margin-top:4px}
 ALLOWED_TAGS = re.compile(r"</?(em|br)>")
 
 
-def esc_keep(s):
+def esc_keep(s):  # noqa: E302
     """emとbrだけ許可してエスケープする。"""
     s = str(s or "")
     placeholder = {}
@@ -102,66 +105,102 @@ def esc_keep(s):
     return s
 
 
+MASK_PATTERNS = [
+    (re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+"), "[email]"),
+    (re.compile(r"\bsk-[A-Za-z0-9_-]{8,}"), "[key]"),
+    (re.compile(r"\bghp_[A-Za-z0-9]{8,}|\bgithub_pat_[A-Za-z0-9_]{8,}"), "[key]"),
+    (re.compile(r"\bAKIA[0-9A-Z]{12,}"), "[key]"),
+    (re.compile(r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
+                r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b"), "[uuid]"),
+    (re.compile(r"/(?:Users|home)/[A-Za-z0-9_.-]+"), "~"),
+    (re.compile(r"[A-Za-z]:\\Users\\[^\\\s]+"), "~"),
+    (re.compile(r"/(?:private/)?var/folders/\S+"), "[tmp-path]"),
+    (re.compile(r"\b[A-Za-z0-9_-]{32,}\b"), "[token]"),
+]
+SUSPICIOUS = re.compile(
+    r"(sk-[A-Za-z0-9]|ghp_|github_pat_|AKIA[0-9A-Z]|api[_-]?key\s*[:=]|"
+    r"secret\s*[:=]|password\s*[:=]|Bearer\s+[A-Za-z0-9])", re.I)
+
+
 def sanitize(s):
-    """公開向けシートベルト: 個人パス・ホームディレクトリ名をマスクする。"""
-    s = re.sub(r"/(?:Users|home)/[A-Za-z0-9_.-]+", "~", str(s or ""))
+    """Seatbelt for public cards: mask emails, API keys, tokens, UUIDs and
+    user paths. This is a seatbelt, not a guarantee — review before posting."""
+    s = str(s or "")
+    for pat, repl in MASK_PATTERNS:
+        s = pat.sub(repl, s)
+    return s
+
+
+def assert_clean(field, s):
+    """Fail closed: if anything secret-shaped survives masking, refuse to
+    render rather than burn it into a shareable PNG."""
+    m = SUSPICIOUS.search(s)
+    if m:
+        sys.exit(f"refusing to render: field '{field}' still contains a "
+                 f"secret-shaped string after masking ({m.group(0)[:20]}...). "
+                 f"Clean the input JSON and retry.")
     return s
 
 
 def build_html(d):
-    brand = esc_keep(sanitize(d.get("brand", "")))
+    def clean(field, v):
+        return assert_clean(field, sanitize(v))
+
+    brand = esc_keep(clean("brand", d.get("brand", "")))
+    link = d.get("link", "")
+    foot_txt = brand + (f' ・ {esc_keep(clean("link", link))}' if link else "")
     cards = []
 
     def foot(i, total):
-        return (f'<div class="rule"></div><p class="foot">{brand}</p>'
+        return (f'<div class="rule"></div><p class="foot">{foot_txt}</p>'
                 f'<p class="pager">{i} / {total}</p></div>')
 
     specs = [k for k in ("hero", "numbers", "lessons", "howto") if d.get(k)]
     total = len(specs)
     for i, key in enumerate(specs, 1):
         c = d[key]
-        kicker = esc_keep(sanitize(c.get("kicker", key.upper())))
+        kicker = esc_keep(clean("card", c.get("kicker", key.upper())))
         if key == "hero":
-            lines = "<br>".join(esc_keep(sanitize(x)) for x in c.get("lines", []))
+            lines = "<br>".join(esc_keep(clean("hero.lines", x)) for x in c.get("lines", []))
             big = c.get("big", {})
             cards.append(
                 f'<div class="card"><p class="kicker">{kicker}</p><h1>{lines}</h1>'
                 f'<div class="hero-num"><span class="n">{esc_keep(big.get("n", ""))}</span>'
                 f'<span class="u">{esc_keep(big.get("unit", ""))}</span>'
-                f'<span class="d">{esc_keep(sanitize(big.get("note", "")))}</span></div>'
-                f'<p class="sub">{esc_keep(sanitize(c.get("sub", "")))}</p>' + foot(i, total))
+                f'<span class="d">{esc_keep(clean("hero.note", big.get("note", "")))}</span></div>'
+                f'<p class="sub">{esc_keep(clean("card", c.get("sub", "")))}</p>' + foot(i, total))
         elif key == "numbers":
             cells = "".join(
                 f'<div class="cell"><div class="n">{esc_keep(x["n"])}'
                 f'<small>{esc_keep(x.get("unit", ""))}</small></div>'
-                f'<div class="l">{esc_keep(sanitize(x["label"]))}</div></div>'
+                f'<div class="l">{esc_keep(clean("cell.label", x["label"]))}</div></div>'
                 for x in c.get("cells", [])[:6])
             cards.append(
                 f'<div class="card"><p class="kicker">{kicker}</p>'
-                f'<h2>{esc_keep(sanitize(c.get("title", "")))}</h2>'
+                f'<h2>{esc_keep(clean("card", c.get("title", "")))}</h2>'
                 f'<div class="grid">{cells}</div>' + foot(i, total))
         elif key == "lessons":
             items = "".join(
-                f'<li><div><b>{esc_keep(sanitize(x["title"]))}</b>'
-                f'<span>{esc_keep(sanitize(x["body"]))}</span></div></li>'
+                f'<li><div><b>{esc_keep(clean("item.title", x["title"]))}</b>'
+                f'<span>{esc_keep(clean("item.body", x["body"]))}</span></div></li>'
                 for x in c.get("items", [])[:4])
             cards.append(
                 f'<div class="card"><p class="kicker">{kicker}</p>'
-                f'<h2>{esc_keep(sanitize(c.get("title", "")))}</h2>'
+                f'<h2>{esc_keep(clean("card", c.get("title", "")))}</h2>'
                 f'<ol class="learn">{items}</ol>' + foot(i, total))
         elif key == "howto":
             steps = "".join(
-                f'<li><div>{esc_keep(sanitize(x["title"]))}'
-                f'<small>{esc_keep(sanitize(x["body"]))}</small></div></li>'
+                f'<li><div>{esc_keep(clean("item.title", x["title"]))}'
+                f'<small>{esc_keep(clean("item.body", x["body"]))}</small></div></li>'
                 for x in c.get("steps", [])[:3])
             tease = c.get("tease")
             tease_html = ""
             if tease:
-                tease_html = (f'<div class="tease">{esc_keep(sanitize(tease["title"]))}'
-                              f'<small>{esc_keep(sanitize(tease.get("note", "")))}</small></div>')
+                tease_html = (f'<div class="tease">{esc_keep(clean("tease", tease["title"]))}'
+                              f'<small>{esc_keep(clean("tease.note", tease.get("note", "")))}</small></div>')
             cards.append(
                 f'<div class="card"><p class="kicker">{kicker}</p>'
-                f'<h2>{esc_keep(sanitize(c.get("title", "")))}</h2>'
+                f'<h2>{esc_keep(clean("card", c.get("title", "")))}</h2>'
                 f'<ol class="steps">{steps}</ol>{tease_html}' + foot(i, total))
 
     return (f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
@@ -197,19 +236,25 @@ def main():
         f.write(doc)
         src = f.name
     shot = src + ".png"
-    subprocess.run([find_chrome(chrome_override), "--headless=new", "--disable-gpu",
-                    "--hide-scrollbars", f"--screenshot={shot}",
-                    f"--window-size=1600,{900 * total}", f"file://{src}"],
-                   capture_output=True, check=True)
-
-    im = Image.open(shot)
-    names = [k for k in ("hero", "numbers", "lessons", "howto") if data.get(k)]
-    for i, name in enumerate(names):
-        path = os.path.join(outdir, f"card{i + 1}-{name}.png")
-        im.crop((0, i * 900, 1600, (i + 1) * 900)).save(path)
-        print(path)
-    os.unlink(src)
-    os.unlink(shot)
+    try:
+        proc = subprocess.run(
+            [find_chrome(chrome_override), "--headless=new", "--disable-gpu",
+             "--hide-scrollbars", f"--screenshot={shot}",
+             f"--window-size=1600,{900 * total}", f"file://{src}"],
+            capture_output=True)
+        if proc.returncode != 0 or not os.path.exists(shot):
+            tail = (proc.stderr or b"").decode(errors="replace")[-400:]
+            sys.exit(f"Chrome failed (exit {proc.returncode}). stderr tail:\n{tail}")
+        im = Image.open(shot)
+        names = [k for k in ("hero", "numbers", "lessons", "howto") if data.get(k)]
+        for i, name in enumerate(names):
+            path = os.path.join(outdir, f"card{i + 1}-{name}.png")
+            im.crop((0, i * 900, 1600, (i + 1) * 900)).save(path)
+            print(path)
+    finally:
+        for tmp in (src, shot):
+            if os.path.exists(tmp):
+                os.unlink(tmp)
 
 
 if __name__ == "__main__":

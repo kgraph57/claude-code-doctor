@@ -1,11 +1,13 @@
 ---
 name: claude-code-doctor
 description: >
-  Health checkup for your Claude Code setup. Runs a read-only audit across 10 domains
-  (CLAUDE.md, rules, skills, agents, hooks, permissions, MCP, automations, git, disk)
-  using parallel subagents, triages findings on an impact-x-effort matrix, and renders
-  a one-page HTML dashboard plus optional sanitized share cards. Makes zero changes
-  until the user explicitly approves each fix.
+  Use when the user asks to audit, diagnose, or health-check their Claude Code setup,
+  wonders where their context/tokens go, or invokes /doctor. Runs a read-only audit
+  across 10 domains (directory structure, dev repos, CLAUDE.md hierarchy,
+  settings & permissions, skills, commands, subagents, MCP & plugins,
+  automations & git, usage & disk) with parallel subagents, triages findings on an
+  impact-x-effort matrix, and renders an HTML dashboard with A-E grades, red flags
+  and a paste-ready action plan. Zero changes until the user approves each fix.
   Triggers: '/doctor', 'audit my claude code setup', 'setup audit', 'health check my setup',
   'claude code doctor', '環境監査', 'セットアップ監査', 'Claude Code健康診断', '設定を診断して'
 ---
@@ -19,6 +21,9 @@ Write the report, dashboard and all conversation output in the user's language.
 
 ## Iron rules (override everything else)
 
+0. **Be honest about what "read-only" is**: a prompt-level contract, not an OS
+   sandbox. Tell the user so if asked, and recommend pairing with Claude Code
+   permission deny rules for hard guarantees.
 1. **The diagnosis phase is strictly read-only.** Never use Write / Edit / mkdir / mv /
    rm / any git-mutating command. Allowed: ls / find / du / wc / head / grep / cat /
    stat / plutil -p / git status / git log / git ls-files, plus the Read / Grep / Glob tools.
@@ -84,14 +89,14 @@ With all agent results in hand:
 
 1. **Markdown report** written to the single approved location
    (state map → matrix → ideal layout → phased plan)
-1. **Prescriptions (action plan)**: for every matrix-A/B item, write an `actions[]`
+2. **Prescriptions (action plan)**: for every matrix-A/B item, write an `actions[]`
    entry whose `prompt` is a ready-to-paste Claude Code instruction that executes
    that one fix safely (backup → quarantine → verify baked in, ends with a report
    step). A diagnosis without an executable action plan is not a deliverable.
-2. **HTML dashboard**: assemble the findings JSON and run
+3. **HTML dashboard**: assemble the findings JSON and run
    `python3 scripts/build_dashboard.py findings.json out.html`
    (set `meta.lang` to `en` or `ja`), then open it in the browser
-3. **Share cards (only on request)**: assemble a sanitized summary JSON and run
+4. **Share cards (only on request)**: assemble a sanitized summary JSON and run
    `python3 scripts/build_share_cards.py cards.json outdir/` for four 16:9 PNGs
 
 Always **verify rendering with a headless browser screenshot** before calling any

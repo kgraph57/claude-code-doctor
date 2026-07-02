@@ -7,7 +7,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-0B7DA3.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-0B7DA3.svg)](https://github.com/kgraph57/claude-code-doctor/pulls)
 [![Made with Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-E8801A.svg)](https://claude.com/claude-code)
-[![GitHub stars](https://img.shields.io/github/stars/kgraph57/claude-code-doctor?style=social)](https://github.com/kgraph57/claude-code-doctor/stargazers)
 
 <h3>2年使い込んだClaude Code環境を、Claude自身に監査させた。<br>返ってきた指摘は104件。</h3>
 
@@ -30,7 +29,7 @@ Claude Codeの環境は庭のように育ちます。足したスキル、承認
 | トリガー語が衝突するスキル | **70本**の中に複数クラスタ |
 | ついでに見つかったディスク回収余地 | **約200GB** |
 
-あなたの環境は違う数字のはずです。それこそがポイントで、見てみるまで分かりません。このスキルは「見てみる」を安く・安全に・ちょっと楽しくします。
+あなたの環境は違う数字のはずです。それこそがポイントで、見てみるまで分かりません。コードを診るツール（リンター等）はあっても、AIワークスペースの層──コンテキスト税・許可リストの堆積・エージェント群──を診るものはありませんでした。このスキルは「見てみる」を安く・安全に・ちょっと楽しくします。
 
 不健康な環境は、不健康なAIを育てます。設定で肥満化したAIは毎セッション重い体を引きずって起動し、動きが鈍り、変な行動をし始めます。あなたが今育てているのは未来の相棒です。太らせたままにしないでください。
 
@@ -47,11 +46,12 @@ Claude Codeの環境は庭のように育ちます。足したスキル、承認
 ## クイックスタート
 
 ```bash
-git clone https://github.com/kgraph57/claude-code-doctor.git
-ln -s "$(pwd)/claude-code-doctor" ~/.claude/skills/claude-code-doctor
+git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/claude-code-doctor
 ```
 
-Claude Code内で:
+この1行がやることは3つだけです: ①GitHubからこのツール一式をダウンロードし ②Claude Codeがスキルを探す決まったフォルダ（`~/.claude/skills/`）に置き ③以後、Claude Codeが自動で見つけて使えるようにします。あなたのファイルには何も起きません。
+
+Claude Codeのチャット欄に、こう打ちます:
 
 ```text
 read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
@@ -59,7 +59,9 @@ read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
 
 または `/doctor`。スキャン範囲と**立入禁止パス**（個人文書・鍵・患者データなど、AIに読ませたくない場所）を先に確認してから走ります。
 
-> 必要環境: 監査とMarkdownレポートは追加依存なし。HTMLダッシュボードはPython標準ライブラリのみ。共有カードPNG（任意機能）だけheadless ChromeとPillowが必要。
+> 必要環境: 監査とMarkdownレポートは追加依存なし。HTMLダッシュボードはPython標準ライブラリのみ。共有カードPNG（任意機能）だけheadless Chrome/ChromiumとPillowが必要。
+>
+> **Linux**: 監査とダッシュボードはそのまま動きます（領域9はlaunchdの代わりにcron/systemdタイマーを確認。plutil系はmacOS限定）。**Windows**: 未対応（ロードマップ参照）。
 
 ## 何が得られるか
 
@@ -97,11 +99,11 @@ read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
 
 ## 安全設計
 
-- **プロンプト契約でread-only** ── 変更禁止を全サブエージェントに焼き込み
+- **プロンプト契約でread-only** ── 変更禁止を全サブエージェントに焼き込み。正直に言うと、これは指示レベルの契約であってOSのサンドボックスではありません。固い保証が要る場合はClaude Codeのpermission deny設定と併用してください。ガードが発火したら、このスキルは迂回せず停止します
 - **立入禁止パス** ── 指定フォルダは読み取りもfind走査もしない
 - **秘密情報は引用しない** ── パスと存在の指摘のみ
 - **削除はしない** ── 修復はMANIFEST付き隔離。削除は後日
-- **データは外に出ない** ── テレメトリなし・アップロードなし。共有カードはオプトインかつサニタイズ済み
+- **データは外に出ない** ── テレメトリなし・アップロードなし。共有カードはオプトインで、メール・APIキー形状・トークン・UUID・ユーザーパスを自動マスクし、**秘密らしき文字列が残った場合は生成自体を拒否**（フェイルクローズド）。それでもマスクはシートベルトであって保証ではないので、投稿前に一目確認を
 - 修復中に権限ガードにブロックされたら、迂回せず停止して報告
 
 ## 焼き込まれた設計原則
@@ -128,24 +130,34 @@ read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
 </details>
 
 <details>
+<summary><b>監査自体のコストは？</b></summary>
+最初の患者（2年物のヘビー環境・並列サブエージェント10体）で合計およそ100万トークンでした。API従量なら数ドル、サブスクリプションならセッション枠をそれなりに使います。コスト漏れを指摘するツールなので、自分の値札も開示しておきます。
+</details>
+
+<details>
+<summary><b>会社の厳しい権限環境でも動きますか？</b></summary>
+すべてローカルのClaude Codeセッション内で動き、このスキル自身は通信もテレメトリも追加しません。permission設定は尊重され、denyに阻まれた場合は迂回せず「そこにガードがある」ことを所見として報告します。
+</details>
+
+<details>
 <summary><b>どれくらい時間がかかりますか？</b></summary>
 最初の患者（2年物のヘビーな環境）は並列サブエージェント10体で約12分でした。逐次フォールバックはもう少しかかります。
 </details>
 
 ## ロードマップ
 
-- [ ] 健康スコア（0〜100点）とグレード表示
-- [ ] Windows / Linux対応（現在はmacOS最適化）
-- [ ] 差分モード: 前回の健診との比較
+- [x] 健康スコア（0〜100点）・A〜E判定・レーダーチャート・レッドフラグ ── 実装済み
+- [ ] デモGIF / 60秒紹介動画
+- [ ] 差分モード: 前回の健診との比較（健診の本命）
+- [ ] Windows対応（Linuxはおおむね動作。クイックスタートの注記参照）
 - [ ] CIモード: 常時ロード税が予算を超えたらPRを落とす
+- [ ] コミュニティ製チェック項目パック（references/への追加だけで拡張）
 
-IssueもPRも歓迎です（日本語・英語どちらでも）。
+IssueもPRも歓迎です（日本語・英語どちらでも）。[CONTRIBUTING.md](CONTRIBUTING.md) 参照。
 
-## Star History
+## 役に立ったら
 
-[![Star History Chart](https://api.star-history.com/svg?repos=kgraph57/claude-code-doctor&type=Date)](https://star-history.com/#kgraph57/claude-code-doctor&Date)
-
-トークンとお金と週末の掃除時間が浮いたら、⭐で次の人に教えてあげてください。
+トークンとお金と週末の掃除時間が浮いたら、⭐で次の人に教えてあげてください。総合判定を添えたissueは採点モデルの調整に役立ちます。
 
 ## ライセンス
 
