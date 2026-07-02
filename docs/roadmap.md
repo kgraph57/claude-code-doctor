@@ -26,9 +26,9 @@ Shipped in this release. The real point of a checkup is the next checkup.
 
 ## v0.5.0 - CI Budget Gate
 
-Make AI-workspace drift visible in team repositories.
+Shipped in this release. Make AI-workspace drift visible in team repositories.
 
-- GitHub Action that validates exported checkup JSON.
+- Budget gate script that validates exported checkup JSON.
 - Optional budgets for always-on context, permission count, MCP tool count, and
   critical findings.
 - No secrets, no uploads, no machine scan inside CI unless a user explicitly

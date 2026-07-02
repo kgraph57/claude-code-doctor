@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.5.0 - 2026-07-02
+
+This release ships CI Budget Gate: teams can fail a PR when a sanitized report
+exceeds agreed AI-workspace budgets.
+
+### Added
+
+- `scripts/check_budgets.py` for budget enforcement in CI.
+- `samples/budgets.json` as a copyable budget fixture.
+- `docs/ci-budget-gate.md` with command usage, exit codes, budget schema, and
+  a GitHub Actions example.
+- CI coverage for the budget gate fixture.
+
+### Changed
+
+- README and README.ja now include a CI Budget Gate quick command.
+- Roadmap now marks v0.5.0 CI Budget Gate as shipped.
+
 ## v0.4.0 - 2026-07-02
 
 This release ships Diff Mode: the second checkup can now prove what improved,

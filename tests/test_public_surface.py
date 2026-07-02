@@ -13,14 +13,16 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.md")
 
         for needle in [
-            "Current release: **v0.4.0**",
+            "Current release: **v0.5.0**",
             "## Paste This Into Claude Code",
             "## Demo In 10 Seconds",
             "## Diff Mode",
+            "## CI Budget Gate",
             "## Why Star This Repo?",
             "docs/roadmap.md",
             "actions/workflows/test.yml/badge.svg",
             "scripts/compare_reports.py samples/diff-before.json samples/diff-after.json",
+            "scripts/check_budgets.py samples/diff-before.json samples/budgets.json",
         ]:
             self.assertIn(needle, readme)
         self.assertNotIn("cards.html", readme)
@@ -29,24 +31,26 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.ja.md")
 
         for needle in [
-            "現在のリリース: **v0.4.0**",
+            "現在のリリース: **v0.5.0**",
             "## Claude Codeに貼る",
             "## 10秒デモ",
             "## 差分モード",
+            "## CI予算ゲート",
             "## なぜスターするか",
             "docs/roadmap.md",
             "actions/workflows/test.yml/badge.svg",
             "scripts/compare_reports.py samples/diff-before.json samples/diff-after.json",
+            "scripts/check_budgets.py samples/diff-before.json samples/budgets.json",
         ]:
             self.assertIn(needle, readme)
         self.assertNotIn("cards.html", readme)
 
-    def test_changelog_leads_with_v040(self):
+    def test_changelog_leads_with_v050(self):
         changelog = self.read("CHANGELOG.md")
 
-        self.assertLess(changelog.index("## v0.4.0"), changelog.index("## v0.3.0"))
-        self.assertIn("Diff Mode", changelog)
-        self.assertIn("compare_reports.py", changelog)
+        self.assertLess(changelog.index("## v0.5.0"), changelog.index("## v0.4.0"))
+        self.assertIn("CI Budget Gate", changelog)
+        self.assertIn("check_budgets.py", changelog)
 
     def test_roadmap_names_next_public_milestones(self):
         roadmap = self.read("docs/roadmap.md")
@@ -66,6 +70,7 @@ class PublicSurfaceTests(unittest.TestCase):
         self.assertIn("python -m unittest discover -s tests", workflow)
         self.assertIn("scripts/build_dashboard.py samples/dashboard.json", workflow)
         self.assertIn("scripts/compare_reports.py samples/diff-before.json samples/diff-after.json", workflow)
+        self.assertIn("scripts/check_budgets.py samples/diff-before.json samples/budgets.json", workflow)
 
         for path in [
             ".github/ISSUE_TEMPLATE/checkup-grade.yml",
@@ -77,6 +82,8 @@ class PublicSurfaceTests(unittest.TestCase):
         for path in [
             "samples/diff-before.json",
             "samples/diff-after.json",
+            "samples/budgets.json",
+            "docs/ci-budget-gate.md",
         ]:
             self.assertTrue((ROOT / path).exists(), path)
 

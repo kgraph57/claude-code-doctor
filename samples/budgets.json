@@ -1,0 +1,8 @@
+{
+  "max": {
+    "always_on_tokens": 50000,
+    "permissions": 900,
+    "mcp_tools": 70,
+    "critical_findings": 1
+  }
+}

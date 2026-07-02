@@ -98,6 +98,29 @@ Diff Mode accepts the same dashboard JSON export. For best results, include:
 - `actions[].id`, `title`, and optional `done: true` or
   `status: "completed"` for prescription progress.
 
+## CI budget input
+
+```bash
+python3 scripts/check_budgets.py report.json budgets.json budget-summary.md
+```
+
+Budget files use maximum values:
+
+```json
+{
+  "max": {
+    "always_on_tokens": 30000,
+    "permissions": 500,
+    "mcp_tools": 40,
+    "critical_findings": 0
+  }
+}
+```
+
+The budget gate never scans a machine. It only reads an exported report and a
+budget file. Missing metrics are reported as missing and do not fail the gate;
+present metrics fail when they exceed the configured maximum.
+
 ## How to assign the matrix
 
 | Cell | Meaning | When to act |
