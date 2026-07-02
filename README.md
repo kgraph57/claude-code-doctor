@@ -1,3 +1,5 @@
+> 🇯🇵 **日本語版READMEがあります** → [README.ja.md](README.ja.md)
+
 <div align="center">
 
 <img src="docs/assets/banner.png" alt="Claude Code Doctor — a health checkup for your Claude Code setup" width="100%">

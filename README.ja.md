@@ -1,3 +1,5 @@
+> 🌐 **English README** → [README.md](README.md)
+
 <div align="center">
 
 <img src="docs/assets/banner.png" alt="Claude Code Doctor — Claude Code環境の健康診断" width="100%">
