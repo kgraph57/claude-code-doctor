@@ -15,7 +15,7 @@
 
 *Claude Code環境に潜む文脈税、死に権限、MCP肥大、ゾンビ自動化を見つける。*
 
-現在のリリース: **v0.10.0** — Linux beta probe plan、60秒ウォークスルー生成、Windows beta probe plan、ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モードを含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
+現在のリリース: **v0.11.0** — 投稿用レポート検証、Linux beta probe plan、60秒ウォークスルー生成、Windows beta probe plan、ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モードを含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
 
 </div>
 
@@ -105,6 +105,16 @@ open /tmp/claude-code-doctor-budget.md
 ```
 
 常時ロードtoken、permission数、MCP tool数、critical finding数に上限を設定できます。詳細は [docs/ci-budget-gate.md](docs/ci-budget-gate.md)。
+
+## 投稿用レポート
+
+実環境の総合判定をpublic issueに載せる前に、サニタイズ済みJSONを検証できます。
+
+```bash
+python3 scripts/validate_contributed_report.py samples/contributed-report.json
+```
+
+validatorは集計値だけを受け付け、実パス、メール、secret形状の文字列を拒否します。詳細は [docs/contributed-reports.md](docs/contributed-reports.md)。
 
 ## コミュニティ領域パック
 
@@ -283,6 +293,7 @@ AIワークスペース健康診断は、掃除スクリプトではありませ
 - [x] 健康スコア（0〜100点）・A〜E判定・レーダーチャート・レッドフラグ ── 実装済み
 - [x] 60秒ウォークスルー生成とcapture page ── 実装済み
 - [x] 差分モード: 前回の健診との比較（健診の本命）── 実装済み
+- [x] 投稿用レポートvalidator: 実グレードを生パスなしで共有 ── 実装済み
 - [x] Linux path coverage beta: read-only shell probe plan ── 実装済み
 - [x] Windows path coverage beta: read-only PowerShell probe plan ── 実装済み
 - [x] CIモード: 常時ロード税が予算を超えたらPRを落とす ── 実装済み

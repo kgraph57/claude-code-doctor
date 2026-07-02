@@ -15,7 +15,7 @@
 
 *Find the context tax, dead permissions, MCP bloat, and zombie automations hiding in your Claude Code setup.*
 
-Current release: **v0.10.0** — Linux beta probe plan, 60-second walkthrough generator, Windows beta probe plan, Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, and Diff Mode. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **v0.11.0** — Contributed Report validation, Linux beta probe plan, 60-second walkthrough generator, Windows beta probe plan, Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, and Diff Mode. See [CHANGELOG.md](CHANGELOG.md).
 
 </div>
 
@@ -113,6 +113,17 @@ open /tmp/claude-code-doctor-budget.md
 
 Budgets can cap always-on tokens, permission entries, MCP tools, and critical
 findings. See [docs/ci-budget-gate.md](docs/ci-budget-gate.md).
+
+## Contributed Reports
+
+Validate sanitized real-world grade reports before posting them publicly:
+
+```bash
+python3 scripts/validate_contributed_report.py samples/contributed-report.json
+```
+
+The validator accepts aggregate metrics only and rejects raw paths, emails, and
+secret-shaped strings. See [docs/contributed-reports.md](docs/contributed-reports.md).
 
 ## Community Domain Packs
 
@@ -313,6 +324,7 @@ Yes — reports and the dashboard follow your language (<code>meta.lang: "en" | 
 - [x] Health score (0-100), A-E grades, radar chart, red flags — shipped
 - [x] 60-second walkthrough generator and capture page — shipped
 - [x] Diff mode: compare against your last checkup (the real point of a checkup) — shipped
+- [x] Contributed report validator: share real grades without leaking raw paths — shipped
 - [x] Linux path coverage beta: read-only shell probe plan — shipped
 - [x] Windows path coverage beta: read-only PowerShell probe plan — shipped
 - [x] CI mode: fail a PR when the always-on token tax crosses a budget — shipped

@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.11.0 - 2026-07-02
+
+This release ships contributed-report validation: a safe intake format for
+people who want to share real overall grades without posting raw local reports.
+
+### Added
+
+- `scripts/validate_contributed_report.py` for validating sanitized community
+  grade reports.
+- `samples/contributed-report.json` as a fictional valid fixture.
+- `docs/contributed-reports.md` with the public-safe report schema.
+- CI coverage for the contributed-report validator.
+
+### Changed
+
+- README and README.ja now include a contributed-report quick command.
+- The checkup-grade issue template now points contributors to the validator.
+- Roadmap now marks contributed-report validation as shipped.
+
 ## v0.10.0 - 2026-07-02
 
 This release ships Linux beta coverage: a read-only shell probe plan for Linux

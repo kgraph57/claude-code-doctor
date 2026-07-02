@@ -121,6 +121,18 @@ The budget gate never scans a machine. It only reads an exported report and a
 budget file. Missing metrics are reported as missing and do not fail the gate;
 present metrics fail when they exceed the configured maximum.
 
+## Contributed report input
+
+```bash
+python3 scripts/validate_contributed_report.py samples/contributed-report.json
+```
+
+Contributed reports are for public calibration issues, not private diagnosis.
+They use `claude-code-doctor-contributed-report-v1`, include aggregate metrics
+and 10 domain summaries, and intentionally omit raw paths, full findings, action
+prompts, and local report text. The validator fails closed when it sees raw user
+paths, emails, API-key shapes, bearer tokens, or other secret-shaped strings.
+
 ## Domain pack input
 
 ```bash

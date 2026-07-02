@@ -7,6 +7,8 @@ body:
     attributes:
       value: |
         Thanks for helping calibrate Claude Code Doctor. Share aggregate numbers only. Do not paste secrets, private paths, patient data, customer data, or full local reports.
+        If you prefer JSON, validate it first:
+        `python3 scripts/validate_contributed_report.py samples/contributed-report.json`
   - type: input
     id: overall_grade
     attributes:

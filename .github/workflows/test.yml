@@ -42,6 +42,9 @@ jobs:
       - name: Validate adapter notes
         run: python scripts/validate_adapter_notes.py docs/adapters/*.md
 
+      - name: Validate contributed report fixture
+        run: python scripts/validate_contributed_report.py samples/contributed-report.json
+
       - name: Build Windows probe plan
         run: python scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md
 

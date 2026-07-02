@@ -91,6 +91,20 @@ paths before execution, and no mutating commands.
   `systemctl start/stop/enable/disable`, and `crontab -e`.
 - Keep Linux marked beta until a real Linux checkup report is contributed.
 
+## v0.11.0 - Contributed Report Intake
+
+Shipped in this release. The project can now accept public calibration data
+without asking people to paste raw local reports.
+
+- Validate `claude-code-doctor-contributed-report-v1` JSON with
+  `scripts/validate_contributed_report.py`.
+- Require aggregate metrics, overall grade/score, and exactly 10 domain
+  summaries.
+- Reject raw user paths, emails, API-key shapes, bearer tokens, and other
+  secret-shaped strings before public posting.
+- Provide a fictional valid fixture in `samples/contributed-report.json`.
+- Connect the checkup-grade issue template to the validator.
+
 ## What We Will Not Build
 
 - No default auto-fix mode. Diagnosis and treatment stay separate.

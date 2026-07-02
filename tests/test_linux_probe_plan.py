@@ -53,9 +53,9 @@ class LinuxProbePlanTests(unittest.TestCase):
         self.assertIn("Linux coverage is beta", docs)
         self.assertIn("systemctl --user list-timers", domains)
         self.assertIn("crontab -l", skill)
-        self.assertIn("Current release: **v0.10.0**", readme)
+        self.assertIn("Current release: **v0.11.0**", readme)
         self.assertIn("Linux beta probe plan", readme)
-        self.assertIn("現在のリリース: **v0.10.0**", readme_ja)
+        self.assertIn("現在のリリース: **v0.11.0**", readme_ja)
         self.assertIn("Linux beta probe plan", readme_ja)
         self.assertIn("scripts/build_linux_probe_plan.py /tmp/claude-code-doctor-linux.md", workflow)
 

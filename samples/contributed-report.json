@@ -1,0 +1,36 @@
+{
+  "schema": "claude-code-doctor-contributed-report-v1",
+  "environment": {
+    "os": "macOS",
+    "harness": "Claude Code",
+    "doctor_version": "v0.11.0",
+    "audit_date": "2026-07-02"
+  },
+  "overall": {
+    "grade": "B",
+    "score": 72
+  },
+  "metrics": {
+    "always_on_tokens": 18400,
+    "permissions": 220,
+    "mcp_tools": 31,
+    "critical_findings": 0,
+    "total_findings": 42
+  },
+  "domains": [
+    {"name": "Directory structure", "grade": "B", "score": 74, "finding_count": 4, "red_flag_count": 0},
+    {"name": "Development repositories", "grade": "B", "score": 76, "finding_count": 5, "red_flag_count": 0},
+    {"name": "CLAUDE.md hierarchy", "grade": "C", "score": 63, "finding_count": 7, "red_flag_count": 0},
+    {"name": "Settings and permissions", "grade": "B", "score": 71, "finding_count": 6, "red_flag_count": 0},
+    {"name": "Skills", "grade": "B", "score": 78, "finding_count": 4, "red_flag_count": 0},
+    {"name": "Commands", "grade": "A", "score": 88, "finding_count": 2, "red_flag_count": 0},
+    {"name": "Subagents", "grade": "B", "score": 73, "finding_count": 3, "red_flag_count": 0},
+    {"name": "MCP and plugins", "grade": "C", "score": 61, "finding_count": 6, "red_flag_count": 0},
+    {"name": "Automations and git hygiene", "grade": "B", "score": 70, "finding_count": 3, "red_flag_count": 0},
+    {"name": "Usage reality and disk hygiene", "grade": "B", "score": 77, "finding_count": 2, "red_flag_count": 0}
+  ],
+  "feedback": {
+    "grade_felt": "about_right",
+    "notes": "The score matched the cleanup priority. Shared as aggregate fixture data only."
+  }
+}
