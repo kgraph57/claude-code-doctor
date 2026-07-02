@@ -1,0 +1,45 @@
+name: Checkup grade report
+description: Share a sanitized overall grade so the scoring model can improve.
+title: "[grade] "
+labels: ["checkup-grade", "scoring"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping calibrate Claude Code Doctor. Share aggregate numbers only. Do not paste secrets, private paths, patient data, customer data, or full local reports.
+  - type: input
+    id: overall_grade
+    attributes:
+      label: Overall grade
+      description: Example: B 72/100
+      placeholder: C 55/100
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - macOS
+        - Linux
+        - Windows
+        - Mixed / other
+    validations:
+      required: true
+  - type: textarea
+    id: aggregate_findings
+    attributes:
+      label: Sanitized aggregate findings
+      description: Counts, scores, and patterns are useful. Raw paths and secrets are not.
+      placeholder: |
+        Always-on context: 18k tokens
+        Permissions: 220 entries, 14 dead paths
+        MCP tools: 31
+        Red flags: 0
+    validations:
+      required: true
+  - type: textarea
+    id: scoring_feedback
+    attributes:
+      label: Did the grade feel right?
+      description: Tell us where the scoring was too harsh, too soft, or confusing.

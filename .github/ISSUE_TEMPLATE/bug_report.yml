@@ -1,0 +1,49 @@
+name: Bug report
+description: Report a renderer, fixture, or skill behavior bug.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please sanitize all examples. Do not paste secrets, private paths, patient data, customer data, or raw local reports.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Skill prompt / audit flow
+        - Dashboard renderer
+        - Share-card renderer
+        - Scoring model
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run ...
+        2. Open ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: macOS/Linux/Windows, Python version, Chrome/Chromium version if share cards are involved.

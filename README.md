@@ -8,21 +8,25 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-0B7DA3.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-0B7DA3.svg)](https://github.com/kgraph57/claude-code-doctor/pulls)
+[![Tests](https://github.com/kgraph57/claude-code-doctor/actions/workflows/test.yml/badge.svg)](https://github.com/kgraph57/claude-code-doctor/actions/workflows/test.yml)
 [![Made with Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-E8801A.svg)](https://claude.com/claude-code)
 
 <h3>I let Claude Code audit its own setup.<br>It came back with 104 findings.</h3>
 
-*A health checkup for your Claude Code setup — by an actual medical doctor.*
+*Find the context tax, dead permissions, MCP bloat, and zombie automations hiding in your Claude Code setup.*
 
-Current release: **v0.2.0** — philosophy docs, sample fixtures, and stricter renderer tests. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **v0.3.0** — LLM quickstart, 10-second demo, GitHub CI, issue templates, and a public roadmap. See [CHANGELOG.md](CHANGELOG.md).
 
 </div>
 
 ---
 
-## Why this exists
+## The 104-Finding Checkup
 
-Claude Code setups grow like gardens. Every skill you add, every permission you approve, every MCP server you try stays behind — and nobody ever looks back. After two years of heavy use, I asked Claude to audit my own environment, read-only. Here is what it found:
+Claude Code Doctor is a read-only checkup for the AI-workspace layer: the
+context, permissions, tools, skills, automations, and evidence trails that shape
+what your coding agent sees before it writes a single line. Patient zero was my
+own two-year Claude Code setup:
 
 | What | Found |
 |------|-------|
@@ -33,9 +37,81 @@ Claude Code setups grow like gardens. Every skill you add, every permission you 
 | Skills with colliding trigger words | several clusters across **70** skills |
 | Reclaimable disk found along the way | **~200 GB** |
 
-Your setup is different. That's the point — you won't know until you look. Linters audit your code; nothing audits the AI-workspace layer — the context tax, the permission sediment, the agent fleet. That's the layer this tool examines. It makes looking cheap, safe, and honestly kind of fun.
+Your setup is different. That's the point. Linters audit your code; this audits
+the environment that tells your AI what "normal" is.
 
-An unhealthy setup means an unhealthy AI: bloated with config it drags into every session, slow to start, prone to weird moves. You are raising this thing — keep it fit.
+## Paste This Into Claude Code
+
+Use this if you want the safest first run:
+
+```text
+I want to run Claude Code Doctor as a read-only setup audit.
+First confirm the scan scope, no-go paths, and exactly one report destination.
+Do not change files, settings, git state, automations, permissions, or secrets before I approve.
+Then run the 10-domain audit, produce the Markdown report, render the HTML dashboard, and give me matrix-A/B prescriptions.
+```
+
+Short form:
+
+```text
+audit my claude code setup, read-only. no changes before I approve.
+```
+
+or simply `/doctor`.
+
+## Demo In 10 Seconds
+
+Preview the renderer without scanning your machine:
+
+```bash
+python3 scripts/build_dashboard.py samples/dashboard.json /tmp/claude-code-doctor-dashboard.html
+open /tmp/claude-code-doctor-dashboard.html
+```
+
+Generate sanitized share-card PNGs from fictional fixture data:
+
+```bash
+python3 scripts/build_share_cards.py samples/share-cards.json /tmp/claude-code-doctor-cards/
+open /tmp/claude-code-doctor-cards/
+```
+
+All sample data is fictional. Your real report is generated locally and never
+leaves your machine.
+
+## Quick Start
+
+```bash
+git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/claude-code-doctor
+```
+
+One command: cloning straight into your skills directory is the whole install
+(`~/.claude/skills/` exists on any machine where Claude Code has run; prefer
+keeping repos elsewhere? clone anywhere and symlink instead).
+
+> Requirements: none for the audit and Markdown report. The HTML dashboard uses only the Python standard library. Share-card PNGs (optional) need headless Chrome/Chromium + Pillow.
+>
+> **Linux**: the audit and dashboard work as-is (domain 9 swaps launchd for cron/systemd timers; `plutil` checks are macOS-only). Share cards work with Chromium. **Windows**: not yet tuned — see [docs/roadmap.md](docs/roadmap.md).
+
+## Why Star This Repo?
+
+Star it if you want this to become the standard safety layer for agentic coding
+setups:
+
+- **Monthly checkups**: run the same audit repeatedly, like an annual physical for your AI workspace
+- **Diff mode**: compare your current setup against the last checkup and prove the cleanup worked
+- **CI budget gates**: fail a PR when always-on context, permissions, or tool tax drifts past a budget
+- **Community domain packs**: add checks for teams, frameworks, OSes, and security policies without forking the core skill
+- **Cross-harness checkups**: adapt the same protocol to Claude Code, Codex, Cursor, and other agent workbenches
+
+See the full build path in [docs/roadmap.md](docs/roadmap.md).
+
+## Why this exists
+
+Claude Code setups grow like gardens. Every skill you add, every permission you
+approve, every MCP server you try stays behind — and nobody ever looks back. An
+unhealthy setup means an unhealthy AI: bloated with config it drags into every
+session, slow to start, prone to weird moves. You are raising this thing — keep
+it fit.
 
 <p align="center">
 <img src="docs/assets/bloated-vs-fit.png" alt="A bloated, sluggish AI robot weighed down by config clutter versus the same robot lean and fit after a checkup" width="82%">
@@ -46,34 +122,6 @@ An unhealthy setup means an unhealthy AI: bloated with config it drags into ever
 <img src="docs/assets/how-it-works.png" alt="Diagnosis first. Treatment only after you say go. Five steps: scope, fan out 10 read-only auditors, structured findings, impact x effort triage, approval gate." width="100%">
 
 The whole trick is one separation: **diagnosis is strictly read-only, treatment happens only after you approve each fix.** Coverage comes from cheap models fanned out in parallel; judgment stays on the strong model; decisions stay with you.
-
-## Quick start
-
-```bash
-git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/claude-code-doctor
-```
-
-One command: cloning straight into your skills directory is the whole install
-(`~/.claude/skills/` exists on any machine where Claude Code has run; prefer
-keeping repos elsewhere? clone anywhere and symlink instead).
-
-Then, inside Claude Code:
-
-```text
-audit my claude code setup, read-only. no changes before I approve.
-```
-
-or simply `/doctor`. The skill first confirms the scan scope and your **no-go paths** (folders the AI must never read — personal documents, keys, patient data), then fans out.
-
-> Requirements: none for the audit and Markdown report. The HTML dashboard uses only the Python standard library. Share-card PNGs (optional) need headless Chrome/Chromium + Pillow.
->
-> **Linux**: the audit and dashboard work as-is (domain 9 swaps launchd for cron/systemd timers; `plutil` checks are macOS-only). Share cards work with Chromium. **Windows**: not yet tuned — see roadmap.
-
-Preview the renderer without scanning your machine:
-
-```bash
-python3 scripts/build_dashboard.py samples/dashboard.json /tmp/claude-code-doctor-dashboard.html
-```
 
 ## What you get
 

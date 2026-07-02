@@ -8,21 +8,22 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-0B7DA3.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-0B7DA3.svg)](https://github.com/kgraph57/claude-code-doctor/pulls)
+[![Tests](https://github.com/kgraph57/claude-code-doctor/actions/workflows/test.yml/badge.svg)](https://github.com/kgraph57/claude-code-doctor/actions/workflows/test.yml)
 [![Made with Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-E8801A.svg)](https://claude.com/claude-code)
 
 <h3>2年使い込んだClaude Code環境を、Claude自身に監査させた。<br>返ってきた指摘は104件。</h3>
 
-*現役の医師が作った、Claude Code環境の健康診断。*
+*Claude Code環境に潜む文脈税、死に権限、MCP肥大、ゾンビ自動化を見つける。*
 
-現在のリリース: **v0.2.0** — 哲学ドキュメント、サンプルfixture、レンダラーの厳しめテストを追加。詳細は [CHANGELOG.md](CHANGELOG.md)。
+現在のリリース: **v0.3.0** — LLM向けクイックスタート、10秒デモ、GitHub CI、Issueテンプレート、公開ロードマップを追加。詳細は [CHANGELOG.md](CHANGELOG.md)。
 
 </div>
 
 ---
 
-## なぜ作ったか
+## 104件の健康診断
 
-Claude Codeの環境は庭のように育ちます。足したスキル、承認した許可、試したMCPサーバーはすべて残り続け、誰も振り返りません。2年使い込んだ自分の環境をread-onlyで監査させたら、こうなりました。
+Claude Code Doctorは、AIワークスペース層のread-only健康診断です。コードそのものではなく、AIが1行目を書く前に読んでいる文脈、permissions、tools、skills、自動化、証拠記録を診ます。最初の患者は、2年使い込んだ自分のClaude Code環境でした。
 
 | 項目 | 実測 |
 |------|------|
@@ -33,9 +34,72 @@ Claude Codeの環境は庭のように育ちます。足したスキル、承認
 | トリガー語が衝突するスキル | **70本**の中に複数クラスタ |
 | ついでに見つかったディスク回収余地 | **約200GB** |
 
-あなたの環境は違う数字のはずです。それこそがポイントで、見てみるまで分かりません。コードを診るツール（リンター等）はあっても、AIワークスペースの層──コンテキスト税・許可リストの堆積・エージェント群──を診るものはありませんでした。このスキルは「見てみる」を安く・安全に・ちょっと楽しくします。
+あなたの環境は違う数字のはずです。それこそがポイントで、見てみるまで分かりません。コードを診るツールはあります。このリポは、AIにとっての「普通」を作っている環境そのものを診ます。
 
-不健康な環境は、不健康なAIを育てます。設定で肥満化したAIは毎セッション重い体を引きずって起動し、動きが鈍り、変な行動をし始めます。あなたが今育てているのは未来の相棒です。太らせたままにしないでください。
+## Claude Codeに貼る
+
+初回はこのまま貼るのが安全です。
+
+```text
+Claude Code Doctorをread-onlyの環境監査として実行したいです。
+先にスキャン範囲、立入禁止パス、レポート出力先を1つ確認してください。
+私が承認するまで、ファイル、settings、git状態、自動化、permissions、秘密情報を変更しないでください。
+その後、10領域の監査、Markdownレポート、HTMLダッシュボード、matrix-A/B形式の処方箋まで出してください。
+```
+
+短く言うなら:
+
+```text
+read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
+```
+
+または `/doctor`。
+
+## 10秒デモ
+
+自分の環境をスキャンせず、レンダラーだけ試せます。
+
+```bash
+python3 scripts/build_dashboard.py samples/dashboard.json /tmp/claude-code-doctor-dashboard.html
+open /tmp/claude-code-doctor-dashboard.html
+```
+
+架空データからサニタイズ済み共有カードPNGも作れます。
+
+```bash
+python3 scripts/build_share_cards.py samples/share-cards.json /tmp/claude-code-doctor-cards/
+open /tmp/claude-code-doctor-cards/
+```
+
+サンプルデータはすべて架空です。実レポートはローカルで生成され、外には出ません。
+
+## クイックスタート
+
+```bash
+git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/claude-code-doctor
+```
+
+この1行がやることは3つだけです: ①GitHubからこのツール一式をダウンロードし ②Claude Codeがスキルを探す決まったフォルダ（`~/.claude/skills/`）に置き ③以後、Claude Codeが自動で見つけて使えるようにします。あなたのファイルには何も起きません。
+
+> 必要環境: 監査とMarkdownレポートは追加依存なし。HTMLダッシュボードはPython標準ライブラリのみ。共有カードPNG（任意機能）だけheadless Chrome/ChromiumとPillowが必要。
+>
+> **Linux**: 監査とダッシュボードはそのまま動きます（領域9はlaunchdの代わりにcron/systemdタイマーを確認。plutil系はmacOS限定）。**Windows**: 未対応（[docs/roadmap.md](docs/roadmap.md) 参照）。
+
+## なぜスターするか
+
+このリポを、agentic coding環境の標準安全レイヤーに育てたい人はスターしてください。
+
+- **月次健康診断**: AIワークスペースを人間ドックのように繰り返し測る
+- **差分モード**: 前回の健診と比べ、掃除の効果を数字で見る
+- **CI予算ゲート**: 常時ロード、permissions、tool taxが予算を超えたらPRを止める
+- **コミュニティ領域パック**: チーム、フレームワーク、OS、セキュリティ方針ごとのチェックを追加する
+- **横断チェックアップ**: Claude Code、Codex、Cursor、その他agent workbenchへ同じ診断思想を広げる
+
+今後の実装順は [docs/roadmap.md](docs/roadmap.md) にまとめています。
+
+## なぜ作ったか
+
+Claude Codeの環境は庭のように育ちます。足したスキル、承認した許可、試したMCPサーバーはすべて残り続け、誰も振り返りません。不健康な環境は、不健康なAIを育てます。設定で肥大化したAIは毎セッション重い体を引きずって起動し、動きが鈍り、変な行動をし始めます。あなたが今育てているのは未来の相棒です。太らせたままにしないでください。
 
 <p align="center">
 <img src="docs/assets/bloated-vs-fit.png" alt="設定のガラクタで肥満化して鈍くなったAIロボットと、健診を経て引き締まった同じロボット" width="82%">
@@ -46,32 +110,6 @@ Claude Codeの環境は庭のように育ちます。足したスキル、承認
 <img src="docs/assets/how-it-works.png" alt="診断が先、治療はGOの後。5ステップ: スコープ確認、read-only監査10体のファンアウト、構造化findings、影響度×工数トリアージ、承認ゲート" width="100%">
 
 核心はひとつの分離です。**診断は完全read-only、治療はあなたが1個ずつ承認してから。** 網羅は安いモデルの並列で、判断は上位モデルの1本で、決定はあなたの手元に残ります。
-
-## クイックスタート
-
-```bash
-git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/claude-code-doctor
-```
-
-この1行がやることは3つだけです: ①GitHubからこのツール一式をダウンロードし ②Claude Codeがスキルを探す決まったフォルダ（`~/.claude/skills/`）に置き ③以後、Claude Codeが自動で見つけて使えるようにします。あなたのファイルには何も起きません。
-
-Claude Codeのチャット欄に、こう打ちます:
-
-```text
-read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
-```
-
-または `/doctor`。スキャン範囲と**立入禁止パス**（個人文書・鍵・患者データなど、AIに読ませたくない場所）を先に確認してから走ります。
-
-> 必要環境: 監査とMarkdownレポートは追加依存なし。HTMLダッシュボードはPython標準ライブラリのみ。共有カードPNG（任意機能）だけheadless Chrome/ChromiumとPillowが必要。
->
-> **Linux**: 監査とダッシュボードはそのまま動きます（領域9はlaunchdの代わりにcron/systemdタイマーを確認。plutil系はmacOS限定）。**Windows**: 未対応（ロードマップ参照）。
-
-自分の環境をスキャンせずにレンダラーだけ試すなら:
-
-```bash
-python3 scripts/build_dashboard.py samples/dashboard.json /tmp/claude-code-doctor-dashboard.html
-```
 
 ## 何が得られるか
 

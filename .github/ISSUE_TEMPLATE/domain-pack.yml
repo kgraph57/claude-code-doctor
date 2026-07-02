@@ -1,0 +1,39 @@
+name: Domain pack proposal
+description: Propose a new checkup domain pack or extension.
+title: "[domain-pack] "
+labels: ["domain-pack", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Domain packs should add measurable checks without requiring unsafe access. Keep every check read-only and evidence-based.
+  - type: input
+    id: pack_name
+    attributes:
+      label: Pack name
+      placeholder: Enterprise locked-down pack
+    validations:
+      required: true
+  - type: textarea
+    id: target_user
+    attributes:
+      label: Target user or team
+      placeholder: Who needs this pack, and what setup risk does it reveal?
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: Proposed checks
+      description: List the checks, expected evidence, and pass/fail criteria.
+      placeholder: |
+        - Check: ...
+          Evidence: ...
+          Fails when: ...
+    validations:
+      required: true
+  - type: textarea
+    id: safety_notes
+    attributes:
+      label: Safety notes
+      description: No-go paths, secret-handling concerns, or permission limits.
