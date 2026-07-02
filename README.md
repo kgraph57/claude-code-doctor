@@ -15,7 +15,7 @@
 
 *Find the context tax, dead permissions, MCP bloat, and zombie automations hiding in your Claude Code setup.*
 
-Current release: **v0.6.0** — Community Domain Packs, CI Budget Gate, Diff Mode, and the v0.3.0 public surface. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **v0.7.0** — Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, Diff Mode, and the v0.3.0 public surface. See [CHANGELOG.md](CHANGELOG.md).
 
 </div>
 
@@ -115,6 +115,17 @@ python3 scripts/validate_domain_pack.py domain-packs/*.md
 Included packs cover security teams, solo founders, teaching workshops, and
 locked-down enterprise environments. See [docs/domain-packs.md](docs/domain-packs.md).
 
+## Cross-Harness Checkups
+
+Validate adapter notes for Claude Code, Codex, Cursor, and OpenCode-style workbenches:
+
+```bash
+python3 scripts/validate_adapter_notes.py docs/adapters/*.md
+```
+
+Adapters keep the same vocabulary for context tax, permission drift, tool tax,
+automation drift, red flags, and prescriptions. See [docs/cross-harness.md](docs/cross-harness.md).
+
 ## Quick Start
 
 ```bash
@@ -138,7 +149,7 @@ setups:
 - **Diff mode**: compare your current setup against the last checkup and prove the cleanup worked — shipped in v0.4.0
 - **CI budget gates**: fail a PR when always-on context, permissions, or tool tax drifts past a budget — shipped in v0.5.0
 - **Community domain packs**: add checks for teams, frameworks, OSes, and security policies without forking the core skill — shipped in v0.6.0
-- **Cross-harness checkups**: adapt the same protocol to Claude Code, Codex, Cursor, and other agent workbenches
+- **Cross-harness checkups**: adapt the same protocol to Claude Code, Codex, Cursor, and other agent workbenches — shipped in v0.7.0
 
 See the full build path in [docs/roadmap.md](docs/roadmap.md).
 

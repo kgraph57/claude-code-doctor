@@ -38,3 +38,6 @@ jobs:
 
       - name: Validate domain packs
         run: python scripts/validate_domain_pack.py domain-packs/*.md
+
+      - name: Validate adapter notes
+        run: python scripts/validate_adapter_notes.py docs/adapters/*.md

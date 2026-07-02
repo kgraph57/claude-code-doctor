@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.7.0 - 2026-07-02
+
+This release ships Cross-Harness Checkups: adapter notes for applying the same
+diagnostic protocol beyond Claude Code.
+
+### Added
+
+- `scripts/validate_adapter_notes.py` for validating cross-harness adapter
+  notes.
+- `docs/cross-harness.md` with shared vocabulary and adapter rules.
+- Adapter notes for:
+  - Claude Code
+  - Codex
+  - Cursor
+  - OpenCode-style workbenches
+- CI coverage for all bundled adapter notes.
+
+### Changed
+
+- README and README.ja now include a Cross-Harness Checkups quick command.
+- Roadmap now marks v0.7.0 Cross-Harness Checkups as shipped.
+
 ## v0.6.0 - 2026-07-02
 
 This release ships Community Domain Packs: read-only Markdown check packs that

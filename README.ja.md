@@ -15,7 +15,7 @@
 
 *Claude Code環境に潜む文脈税、死に権限、MCP肥大、ゾンビ自動化を見つける。*
 
-現在のリリース: **v0.6.0** — コミュニティ領域パック、CI予算ゲート、差分モード、v0.3.0の公開導線を含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
+現在のリリース: **v0.7.0** — ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モード、v0.3.0の公開導線を含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
 
 </div>
 
@@ -106,6 +106,16 @@ python3 scripts/validate_domain_pack.py domain-packs/*.md
 
 同梱パックはsecurity team、solo founder、teaching workshop、locked-down enterprise向けです。詳細は [docs/domain-packs.md](docs/domain-packs.md)。
 
+## ハーネス横断チェックアップ
+
+Claude Code、Codex、Cursor、OpenCode系workbench向けのadapter notesを検証できます。
+
+```bash
+python3 scripts/validate_adapter_notes.py docs/adapters/*.md
+```
+
+adapterは、context tax、permission drift、tool tax、automation drift、red flag、prescriptionという共通語彙で揃えます。詳細は [docs/cross-harness.md](docs/cross-harness.md)。
+
 ## クイックスタート
 
 ```bash
@@ -126,7 +136,7 @@ git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/cl
 - **差分モード**: 前回の健診と比べ、掃除の効果を数字で見る（v0.4.0で実装済み）
 - **CI予算ゲート**: 常時ロード、permissions、tool taxが予算を超えたらPRを止める（v0.5.0で実装済み）
 - **コミュニティ領域パック**: チーム、フレームワーク、OS、セキュリティ方針ごとのチェックを追加する（v0.6.0で実装済み）
-- **横断チェックアップ**: Claude Code、Codex、Cursor、その他agent workbenchへ同じ診断思想を広げる
+- **横断チェックアップ**: Claude Code、Codex、Cursor、その他agent workbenchへ同じ診断思想を広げる（v0.7.0で実装済み）
 
 今後の実装順は [docs/roadmap.md](docs/roadmap.md) にまとめています。
 

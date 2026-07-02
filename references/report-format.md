@@ -138,6 +138,18 @@ Each `## Check:` section must include `Evidence`, `Fails when`, and `Safety`.
 The validator requires `Safety` to explicitly say `read-only`, so community
 packs cannot silently turn the checkup into a mutation workflow.
 
+## Adapter note input
+
+```bash
+python3 scripts/validate_adapter_notes.py docs/adapters/*.md
+```
+
+Adapter notes map a non-Claude-Code workbench into the same dashboard schema.
+Each note must include `harness`, `status`, `report_schema`, and the sections
+`Scope`, `No-Go Paths`, `Permission Boundary`, `Evidence Export`, and
+`Known Gaps`. The permission boundary must explicitly forbid routing around
+guards.
+
 ## How to assign the matrix
 
 | Cell | Meaning | When to act |

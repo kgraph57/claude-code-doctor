@@ -47,7 +47,7 @@ Shipped in this release. Let teams extend the checkup without forking the skill.
 
 ## v0.7.0 - Cross-Harness Checkups
 
-Claude Code is the first target, not the only target.
+Shipped in this release. Claude Code is the first target, not the only target.
 
 - Adapter notes for Claude Code, Codex, Cursor, and OpenCode-style workbenches.
 - Shared scoring vocabulary for context tax, permission drift, tool tax, and
