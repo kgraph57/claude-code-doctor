@@ -15,7 +15,7 @@
 
 *Claude Code環境に潜む文脈税、死に権限、MCP肥大、ゾンビ自動化を見つける。*
 
-現在のリリース: **v0.5.0** — CI予算ゲート、差分モード、v0.3.0の公開導線を含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
+現在のリリース: **v0.6.0** — コミュニティ領域パック、CI予算ゲート、差分モード、v0.3.0の公開導線を含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
 
 </div>
 
@@ -95,6 +95,17 @@ open /tmp/claude-code-doctor-budget.md
 
 常時ロードtoken、permission数、MCP tool数、critical finding数に上限を設定できます。詳細は [docs/ci-budget-gate.md](docs/ci-budget-gate.md)。
 
+## コミュニティ領域パック
+
+任意のread-onlyチェックパックを、使う前・PRする前に検証できます。
+
+```bash
+python3 scripts/validate_domain_pack.py domain-packs/security-team.md
+python3 scripts/validate_domain_pack.py domain-packs/*.md
+```
+
+同梱パックはsecurity team、solo founder、teaching workshop、locked-down enterprise向けです。詳細は [docs/domain-packs.md](docs/domain-packs.md)。
+
 ## クイックスタート
 
 ```bash
@@ -114,7 +125,7 @@ git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/cl
 - **月次健康診断**: AIワークスペースを人間ドックのように繰り返し測る
 - **差分モード**: 前回の健診と比べ、掃除の効果を数字で見る（v0.4.0で実装済み）
 - **CI予算ゲート**: 常時ロード、permissions、tool taxが予算を超えたらPRを止める（v0.5.0で実装済み）
-- **コミュニティ領域パック**: チーム、フレームワーク、OS、セキュリティ方針ごとのチェックを追加する
+- **コミュニティ領域パック**: チーム、フレームワーク、OS、セキュリティ方針ごとのチェックを追加する（v0.6.0で実装済み）
 - **横断チェックアップ**: Claude Code、Codex、Cursor、その他agent workbenchへ同じ診断思想を広げる
 
 今後の実装順は [docs/roadmap.md](docs/roadmap.md) にまとめています。
@@ -231,7 +242,7 @@ AIワークスペース健康診断は、掃除スクリプトではありませ
 - [x] 差分モード: 前回の健診との比較（健診の本命）── 実装済み
 - [ ] Windows対応（Linuxはおおむね動作。クイックスタートの注記参照）
 - [x] CIモード: 常時ロード税が予算を超えたらPRを落とす ── 実装済み
-- [ ] コミュニティ製チェック項目パック（references/への追加だけで拡張）
+- [x] コミュニティ製チェック項目パック（validated Markdown pack）── 実装済み
 
 IssueもPRも歓迎です（日本語・英語どちらでも）。[CONTRIBUTING.md](CONTRIBUTING.md) 参照。
 

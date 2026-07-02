@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.6.0 - 2026-07-02
+
+This release ships Community Domain Packs: read-only Markdown check packs that
+teams can validate before using or contributing.
+
+### Added
+
+- `scripts/validate_domain_pack.py` for validating community pack metadata and
+  per-check safety fields.
+- `docs/domain-packs.md` with pack format and compatibility rules.
+- Four example packs in `domain-packs/`:
+  - `security-team.md`
+  - `solo-founder.md`
+  - `teaching-workshop.md`
+  - `enterprise-locked-down.md`
+- CI coverage for all bundled domain packs.
+
+### Changed
+
+- README and README.ja now include a Community Domain Packs quick command.
+- Roadmap now marks v0.6.0 Community Domain Packs as shipped.
+
 ## v0.5.0 - 2026-07-02
 
 This release ships CI Budget Gate: teams can fail a PR when a sanitized report

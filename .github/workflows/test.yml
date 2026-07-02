@@ -35,3 +35,6 @@ jobs:
 
       - name: Check budget fixture
         run: python scripts/check_budgets.py samples/diff-before.json samples/budgets.json /tmp/claude-code-doctor-budget.md
+
+      - name: Validate domain packs
+        run: python scripts/validate_domain_pack.py domain-packs/*.md

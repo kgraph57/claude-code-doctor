@@ -15,7 +15,7 @@
 
 *Find the context tax, dead permissions, MCP bloat, and zombie automations hiding in your Claude Code setup.*
 
-Current release: **v0.5.0** — CI Budget Gate, Diff Mode, and the v0.3.0 public surface. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **v0.6.0** — Community Domain Packs, CI Budget Gate, Diff Mode, and the v0.3.0 public surface. See [CHANGELOG.md](CHANGELOG.md).
 
 </div>
 
@@ -103,6 +103,18 @@ open /tmp/claude-code-doctor-budget.md
 Budgets can cap always-on tokens, permission entries, MCP tools, and critical
 findings. See [docs/ci-budget-gate.md](docs/ci-budget-gate.md).
 
+## Community Domain Packs
+
+Validate optional read-only check packs before using or contributing them:
+
+```bash
+python3 scripts/validate_domain_pack.py domain-packs/security-team.md
+python3 scripts/validate_domain_pack.py domain-packs/*.md
+```
+
+Included packs cover security teams, solo founders, teaching workshops, and
+locked-down enterprise environments. See [docs/domain-packs.md](docs/domain-packs.md).
+
 ## Quick Start
 
 ```bash
@@ -125,7 +137,7 @@ setups:
 - **Monthly checkups**: run the same audit repeatedly, like an annual physical for your AI workspace
 - **Diff mode**: compare your current setup against the last checkup and prove the cleanup worked — shipped in v0.4.0
 - **CI budget gates**: fail a PR when always-on context, permissions, or tool tax drifts past a budget — shipped in v0.5.0
-- **Community domain packs**: add checks for teams, frameworks, OSes, and security policies without forking the core skill
+- **Community domain packs**: add checks for teams, frameworks, OSes, and security policies without forking the core skill — shipped in v0.6.0
 - **Cross-harness checkups**: adapt the same protocol to Claude Code, Codex, Cursor, and other agent workbenches
 
 See the full build path in [docs/roadmap.md](docs/roadmap.md).
@@ -256,7 +268,7 @@ Yes — reports and the dashboard follow your language (<code>meta.lang: "en" | 
 - [x] Diff mode: compare against your last checkup (the real point of a checkup) — shipped
 - [ ] Windows path coverage (Linux mostly works today; see Quick start note)
 - [x] CI mode: fail a PR when the always-on token tax crosses a budget — shipped
-- [ ] Community domain packs: add your own checks via a references/ drop-in
+- [x] Community domain packs: add your own checks via validated Markdown packs — shipped
 
 Contributions welcome — issues and PRs, in English or Japanese. See [CONTRIBUTING.md](CONTRIBUTING.md).
 

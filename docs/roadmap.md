@@ -37,9 +37,9 @@ Shipped in this release. Make AI-workspace drift visible in team repositories.
 
 ## v0.6.0 - Community Domain Packs
 
-Let teams extend the checkup without forking the skill.
+Shipped in this release. Let teams extend the checkup without forking the skill.
 
-- Domain-pack format in YAML or Markdown.
+- Domain-pack format in Markdown.
 - Validation script and example packs.
 - Security-team pack, solo-founder pack, teaching/workshop pack, and enterprise
   locked-down pack.

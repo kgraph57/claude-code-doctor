@@ -121,6 +121,23 @@ The budget gate never scans a machine. It only reads an exported report and a
 budget file. Missing metrics are reported as missing and do not fail the gate;
 present metrics fail when they exceed the configured maximum.
 
+## Domain pack input
+
+```bash
+python3 scripts/validate_domain_pack.py domain-packs/*.md
+```
+
+Community domain packs are Markdown files with required metadata:
+
+- `id`
+- `version`
+- `languages`
+- `compatible_reports`
+
+Each `## Check:` section must include `Evidence`, `Fails when`, and `Safety`.
+The validator requires `Safety` to explicitly say `read-only`, so community
+packs cannot silently turn the checkup into a mutation workflow.
+
 ## How to assign the matrix
 
 | Cell | Meaning | When to act |
