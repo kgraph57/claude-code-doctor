@@ -105,10 +105,10 @@ class ValidateRendererBugTests(unittest.TestCase):
         workflow = (ROOT / ".github" / "workflows" / "test.yml").read_text(encoding="utf-8")
         docs = (ROOT / "docs" / "renderer-bug-reports.md").read_text(encoding="utf-8")
 
-        self.assertIn("Current release: **v0.12.0**", readme)
+        self.assertIn("Current release: **v0.13.0**", readme)
         self.assertIn("## Renderer Bug Reports", readme)
         self.assertIn("scripts/validate_renderer_bug.py samples/renderer-bug-dashboard.json", readme)
-        self.assertIn("現在のリリース: **v0.12.0**", readme_ja)
+        self.assertIn("現在のリリース: **v0.13.0**", readme_ja)
         self.assertIn("## レンダラーバグ報告", readme_ja)
         self.assertIn("scripts/validate_renderer_bug.py samples/renderer-bug-dashboard.json", workflow)
         self.assertIn("claude-code-doctor-renderer-bug-v1", docs)

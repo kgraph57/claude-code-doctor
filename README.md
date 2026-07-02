@@ -15,7 +15,7 @@
 
 *Find the context tax, dead permissions, MCP bloat, and zombie automations hiding in your Claude Code setup.*
 
-Current release: **v0.12.0** — Renderer Bug validation, Contributed Report validation, Linux beta probe plan, 60-second walkthrough generator, Windows beta probe plan, Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, and Diff Mode. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **v0.13.0** — Example Manifest validation, Renderer Bug validation, Contributed Report validation, Linux beta probe plan, 60-second walkthrough generator, Windows beta probe plan, Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, and Diff Mode. See [CHANGELOG.md](CHANGELOG.md).
 
 </div>
 
@@ -135,6 +135,17 @@ python3 scripts/validate_renderer_bug.py samples/renderer-bug-dashboard.json
 
 The validator keeps dashboard/share-card bugs reproducible without raw local
 reports, private paths, or secrets. See [docs/renderer-bug-reports.md](docs/renderer-bug-reports.md).
+
+## Example Manifest
+
+Validate that public examples exist, stay fictional, and have proof commands:
+
+```bash
+python3 scripts/validate_examples_manifest.py docs/examples-manifest.json
+```
+
+The manifest keeps samples and generated demos useful without teaching people
+to publish raw local reports. See [docs/examples.md](docs/examples.md).
 
 ## Community Domain Packs
 
@@ -337,6 +348,7 @@ Yes — reports and the dashboard follow your language (<code>meta.lang: "en" | 
 - [x] Diff mode: compare against your last checkup (the real point of a checkup) — shipped
 - [x] Contributed report validator: share real grades without leaking raw paths — shipped
 - [x] Renderer bug validator: submit minimal fictional repro fixtures — shipped
+- [x] Example manifest validator: keep public examples safe and reproducible — shipped
 - [x] Linux path coverage beta: read-only shell probe plan — shipped
 - [x] Windows path coverage beta: read-only PowerShell probe plan — shipped
 - [x] CI mode: fail a PR when the always-on token tax crosses a budget — shipped

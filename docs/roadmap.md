@@ -119,6 +119,21 @@ small fictional fixtures instead of screenshots or raw local reports.
 - Provide a fictional dashboard repro in `samples/renderer-bug-dashboard.json`.
 - Connect the bug-report issue template to the validator.
 
+## v0.13.0 - Example Manifest
+
+Shipped in this release. Public examples are now indexed and validated so they
+remain fictional, reproducible, and safe to share.
+
+- Validate `claude-code-doctor-example-manifest-v1` JSON with
+  `scripts/validate_examples_manifest.py`.
+- List sample reports, share-card fixtures, diff fixtures, budget fixtures,
+  contributed-report examples, renderer bug repros, and generated walkthroughs.
+- Require every example to be marked fictional and to name a proof command.
+- Reject raw user paths, emails, API-key shapes, bearer tokens, and other
+  secret-shaped strings in the manifest.
+- Keep "better examples" tied to the core safety rule instead of becoming
+  decoration.
+
 ## What We Will Not Build
 
 - No default auto-fix mode. Diagnosis and treatment stay separate.
@@ -137,4 +152,5 @@ Good contributions make the checkup more measurable or safer:
 - Domain-pack proposals with explicit checks and expected evidence.
 - OS-specific coverage notes for Linux and Windows.
 - Better examples that preserve the core safety rule: diagnose first, treat
-  only after consent.
+  only after consent. Shipped via the example manifest; new examples should be
+  added there with a proof command.

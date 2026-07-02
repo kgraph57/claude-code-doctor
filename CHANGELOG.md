@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.13.0 - 2026-07-02
+
+This release ships example-manifest validation: a safety and reproducibility
+index for the public sample files and generated demo artifacts.
+
+### Added
+
+- `scripts/validate_examples_manifest.py` for validating the public examples
+  index.
+- `docs/examples-manifest.json` listing fictional examples and their proof
+  commands.
+- `docs/examples.md` explaining the example safety contract.
+- CI coverage for the example manifest.
+
+### Changed
+
+- README and README.ja now include an Example Manifest quick command.
+- Roadmap now marks better safe examples as shipped.
+
 ## v0.12.0 - 2026-07-02
 
 This release ships renderer-bug validation: a safe minimal reproduction format

@@ -1,0 +1,61 @@
+{
+  "schema": "claude-code-doctor-example-manifest-v1",
+  "examples": [
+    {
+      "path": "samples/dashboard.json",
+      "kind": "dashboard_fixture",
+      "fictional": true,
+      "validator": "python3 scripts/build_dashboard.py samples/dashboard.json /tmp/claude-code-doctor-dashboard.html",
+      "notes": "Fictional dashboard fixture for local preview."
+    },
+    {
+      "path": "samples/share-cards.json",
+      "kind": "share_cards_fixture",
+      "fictional": true,
+      "validator": "python3 scripts/build_share_cards.py samples/share-cards.json /tmp/claude-code-doctor-cards/",
+      "notes": "Fictional share-card fixture; renderer still applies its own sanitizer."
+    },
+    {
+      "path": "samples/diff-before.json",
+      "kind": "diff_fixture",
+      "fictional": true,
+      "validator": "python3 scripts/compare_reports.py samples/diff-before.json samples/diff-after.json /tmp/claude-code-doctor-diff.md",
+      "notes": "Fictional before report for diff mode."
+    },
+    {
+      "path": "samples/diff-after.json",
+      "kind": "diff_fixture",
+      "fictional": true,
+      "validator": "python3 scripts/compare_reports.py samples/diff-before.json samples/diff-after.json /tmp/claude-code-doctor-diff.md",
+      "notes": "Fictional after report for diff mode."
+    },
+    {
+      "path": "samples/budgets.json",
+      "kind": "budget_fixture",
+      "fictional": true,
+      "validator": "python3 scripts/check_budgets.py samples/diff-before.json samples/budgets.json /tmp/claude-code-doctor-budget.md",
+      "notes": "Fictional budget gate fixture."
+    },
+    {
+      "path": "samples/contributed-report.json",
+      "kind": "contributed_report",
+      "fictional": true,
+      "validator": "python3 scripts/validate_contributed_report.py samples/contributed-report.json",
+      "notes": "Fictional public grade-report fixture."
+    },
+    {
+      "path": "samples/renderer-bug-dashboard.json",
+      "kind": "renderer_bug",
+      "fictional": true,
+      "validator": "python3 scripts/validate_renderer_bug.py samples/renderer-bug-dashboard.json",
+      "notes": "Fictional dashboard renderer bug fixture."
+    },
+    {
+      "path": "docs/generated-demo/demo-walkthrough.md",
+      "kind": "walkthrough",
+      "fictional": true,
+      "validator": "python3 scripts/build_walkthrough.py docs/generated-demo",
+      "notes": "Generated walkthrough script built from fictional fixture commands."
+    }
+  ]
+}

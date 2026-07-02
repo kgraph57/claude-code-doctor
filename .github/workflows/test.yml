@@ -48,6 +48,9 @@ jobs:
       - name: Validate renderer bug fixture
         run: python scripts/validate_renderer_bug.py samples/renderer-bug-dashboard.json
 
+      - name: Validate example manifest
+        run: python scripts/validate_examples_manifest.py docs/examples-manifest.json
+
       - name: Build Windows probe plan
         run: python scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md
 

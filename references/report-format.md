@@ -145,6 +145,18 @@ include a minimal fictional `input`, and spell out command / expected / actual /
 environment. The validator fails closed when it sees raw user paths, emails,
 API-key shapes, bearer tokens, or other secret-shaped strings.
 
+## Example manifest input
+
+```bash
+python3 scripts/validate_examples_manifest.py docs/examples-manifest.json
+```
+
+The example manifest uses `claude-code-doctor-example-manifest-v1` to list
+public fixtures and their proof commands. Every entry must be fictional,
+repo-relative, present on disk, and attached to a supported validator or renderer
+command. The validator fails closed when the manifest contains raw user paths,
+emails, API-key shapes, bearer tokens, or other secret-shaped strings.
+
 ## Domain pack input
 
 ```bash

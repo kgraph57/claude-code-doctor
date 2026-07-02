@@ -15,7 +15,7 @@
 
 *Claude Code環境に潜む文脈税、死に権限、MCP肥大、ゾンビ自動化を見つける。*
 
-現在のリリース: **v0.12.0** — レンダラーバグ検証、投稿用レポート検証、Linux beta probe plan、60秒ウォークスルー生成、Windows beta probe plan、ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モードを含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
+現在のリリース: **v0.13.0** — サンプルマニフェスト検証、レンダラーバグ検証、投稿用レポート検証、Linux beta probe plan、60秒ウォークスルー生成、Windows beta probe plan、ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モードを含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
 
 </div>
 
@@ -125,6 +125,16 @@ python3 scripts/validate_renderer_bug.py samples/renderer-bug-dashboard.json
 ```
 
 dashboard/share-cardのバグを、実レポート、生パス、秘密情報なしで再現可能にします。詳細は [docs/renderer-bug-reports.md](docs/renderer-bug-reports.md)。
+
+## サンプルマニフェスト
+
+公開サンプルが存在し、架空データで、検証コマンドを持つことを確認できます。
+
+```bash
+python3 scripts/validate_examples_manifest.py docs/examples-manifest.json
+```
+
+manifestは、samplesや生成デモを便利に保ちながら、実レポートを公開する癖を避けるためのガードです。詳細は [docs/examples.md](docs/examples.md)。
 
 ## コミュニティ領域パック
 
@@ -305,6 +315,7 @@ AIワークスペース健康診断は、掃除スクリプトではありませ
 - [x] 差分モード: 前回の健診との比較（健診の本命）── 実装済み
 - [x] 投稿用レポートvalidator: 実グレードを生パスなしで共有 ── 実装済み
 - [x] レンダラーバグvalidator: 架空データの最小再現fixtureで報告 ── 実装済み
+- [x] サンプルマニフェストvalidator: 公開例を安全かつ再現可能に保つ ── 実装済み
 - [x] Linux path coverage beta: read-only shell probe plan ── 実装済み
 - [x] Windows path coverage beta: read-only PowerShell probe plan ── 実装済み
 - [x] CIモード: 常時ロード税が予算を超えたらPRを落とす ── 実装済み
