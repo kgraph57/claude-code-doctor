@@ -1,0 +1,39 @@
+{
+  "brand": "Claude Code Doctor",
+  "link": "github.com/kgraph57/claude-code-doctor",
+  "hero": {
+    "kicker": "CLAUDE CODE DOCTOR",
+    "lines": ["I audited my AI workspace.", "It had <em>12 findings</em>."],
+    "big": {"n": "12", "unit": "findings", "note": "fictional sample data"},
+    "sub": "Share cards contain aggregates only. Real paths and secret-shaped strings are masked or rejected."
+  },
+  "numbers": {
+    "kicker": "NUMBERS",
+    "title": "The rent paid every session",
+    "cells": [
+      {"n": "18,400", "unit": "tk", "label": "always-on context"},
+      {"n": "31", "unit": "", "label": "permission entries"},
+      {"n": "8", "unit": "", "label": "skills checked"},
+      {"n": "0", "unit": "", "label": "changes made during diagnosis"}
+    ]
+  },
+  "lessons": {
+    "kicker": "LESSONS",
+    "title": "What the checkup teaches",
+    "items": [
+      {"title": "Measure first", "body": "Context tax is invisible until counted."},
+      {"title": "Keep diagnosis read-only", "body": "Findings are evidence plus proposals, not automatic fixes."},
+      {"title": "Make fixes pasteable", "body": "Each prescription should be one safe, reversible action."}
+    ]
+  },
+  "howto": {
+    "kicker": "HOW TO",
+    "title": "Run your own checkup",
+    "steps": [
+      {"title": "Install the skill", "body": "Clone this repo into ~/.claude/skills/claude-code-doctor."},
+      {"title": "Confirm no-go paths", "body": "Personal, key, and patient-data folders stay out of scope."},
+      {"title": "Approve fixes one by one", "body": "Back up, quarantine, verify, then report."}
+    ],
+    "tease": {"title": "Nothing changes during diagnosis.", "note": "Treatment starts only after explicit approval."}
+  }
+}

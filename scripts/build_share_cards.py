@@ -146,9 +146,15 @@ def build_html(d):
     def clean(field, v):
         return assert_clean(field, sanitize(v))
 
+    def safe(field, v):
+        return esc_keep(clean(field, v))
+
+    def dicts(values):
+        return [v for v in (values or []) if isinstance(v, dict)]
+
     brand = esc_keep(clean("brand", d.get("brand", "")))
     link = d.get("link", "")
-    foot_txt = brand + (f' ・ {esc_keep(clean("link", link))}' if link else "")
+    foot_txt = brand + (f' ・ {safe("link", link)}' if link else "")
     cards = []
 
     def foot(i, total):
@@ -159,48 +165,50 @@ def build_html(d):
     total = len(specs)
     for i, key in enumerate(specs, 1):
         c = d[key]
-        kicker = esc_keep(clean("card", c.get("kicker", key.upper())))
+        if not isinstance(c, dict):
+            c = {}
+        kicker = safe("card.kicker", c.get("kicker", key.upper()))
         if key == "hero":
-            lines = "<br>".join(esc_keep(clean("hero.lines", x)) for x in c.get("lines", []))
+            lines = "<br>".join(safe("hero.lines", x) for x in c.get("lines", []))
             big = c.get("big", {})
             cards.append(
                 f'<div class="card"><p class="kicker">{kicker}</p><h1>{lines}</h1>'
-                f'<div class="hero-num"><span class="n">{esc_keep(big.get("n", ""))}</span>'
-                f'<span class="u">{esc_keep(big.get("unit", ""))}</span>'
-                f'<span class="d">{esc_keep(clean("hero.note", big.get("note", "")))}</span></div>'
-                f'<p class="sub">{esc_keep(clean("card", c.get("sub", "")))}</p>' + foot(i, total))
+                f'<div class="hero-num"><span class="n">{safe("hero.big.n", big.get("n", ""))}</span>'
+                f'<span class="u">{safe("hero.big.unit", big.get("unit", ""))}</span>'
+                f'<span class="d">{safe("hero.note", big.get("note", ""))}</span></div>'
+                f'<p class="sub">{safe("card.sub", c.get("sub", ""))}</p>' + foot(i, total))
         elif key == "numbers":
             cells = "".join(
-                f'<div class="cell"><div class="n">{esc_keep(x["n"])}'
-                f'<small>{esc_keep(x.get("unit", ""))}</small></div>'
-                f'<div class="l">{esc_keep(clean("cell.label", x["label"]))}</div></div>'
-                for x in c.get("cells", [])[:6])
+                f'<div class="cell"><div class="n">{safe("cell.n", x.get("n", ""))}'
+                f'<small>{safe("cell.unit", x.get("unit", ""))}</small></div>'
+                f'<div class="l">{safe("cell.label", x.get("label", ""))}</div></div>'
+                for x in dicts(c.get("cells"))[:6])
             cards.append(
                 f'<div class="card"><p class="kicker">{kicker}</p>'
-                f'<h2>{esc_keep(clean("card", c.get("title", "")))}</h2>'
+                f'<h2>{safe("card.title", c.get("title", ""))}</h2>'
                 f'<div class="grid">{cells}</div>' + foot(i, total))
         elif key == "lessons":
             items = "".join(
-                f'<li><div><b>{esc_keep(clean("item.title", x["title"]))}</b>'
-                f'<span>{esc_keep(clean("item.body", x["body"]))}</span></div></li>'
-                for x in c.get("items", [])[:4])
+                f'<li><div><b>{safe("item.title", x.get("title", ""))}</b>'
+                f'<span>{safe("item.body", x.get("body", ""))}</span></div></li>'
+                for x in dicts(c.get("items"))[:4])
             cards.append(
                 f'<div class="card"><p class="kicker">{kicker}</p>'
-                f'<h2>{esc_keep(clean("card", c.get("title", "")))}</h2>'
+                f'<h2>{safe("card.title", c.get("title", ""))}</h2>'
                 f'<ol class="learn">{items}</ol>' + foot(i, total))
         elif key == "howto":
             steps = "".join(
-                f'<li><div>{esc_keep(clean("item.title", x["title"]))}'
-                f'<small>{esc_keep(clean("item.body", x["body"]))}</small></div></li>'
-                for x in c.get("steps", [])[:3])
+                f'<li><div>{safe("item.title", x.get("title", ""))}'
+                f'<small>{safe("item.body", x.get("body", ""))}</small></div></li>'
+                for x in dicts(c.get("steps"))[:3])
             tease = c.get("tease")
             tease_html = ""
-            if tease:
-                tease_html = (f'<div class="tease">{esc_keep(clean("tease", tease["title"]))}'
-                              f'<small>{esc_keep(clean("tease.note", tease.get("note", "")))}</small></div>')
+            if isinstance(tease, dict):
+                tease_html = (f'<div class="tease">{safe("tease.title", tease.get("title", ""))}'
+                              f'<small>{safe("tease.note", tease.get("note", ""))}</small></div>')
             cards.append(
                 f'<div class="card"><p class="kicker">{kicker}</p>'
-                f'<h2>{esc_keep(clean("card", c.get("title", "")))}</h2>'
+                f'<h2>{safe("card.title", c.get("title", ""))}</h2>'
                 f'<ol class="steps">{steps}</ol>{tease_html}' + foot(i, total))
 
     return (f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'

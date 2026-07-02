@@ -14,6 +14,8 @@
 
 *A health checkup for your Claude Code setup — by an actual medical doctor.*
 
+Current release: **v0.2.0** — philosophy docs, sample fixtures, and stricter renderer tests. See [CHANGELOG.md](CHANGELOG.md).
+
 </div>
 
 ---
@@ -67,6 +69,12 @@ or simply `/doctor`. The skill first confirms the scan scope and your **no-go pa
 >
 > **Linux**: the audit and dashboard work as-is (domain 9 swaps launchd for cron/systemd timers; `plutil` checks are macOS-only). Share cards work with Chromium. **Windows**: not yet tuned — see roadmap.
 
+Preview the renderer without scanning your machine:
+
+```bash
+python3 scripts/build_dashboard.py samples/dashboard.json /tmp/claude-code-doctor-dashboard.html
+```
+
 ## What you get
 
 All report screenshots below show **fictional sample data** — your report is generated locally from your own machine and never leaves it.
@@ -115,6 +123,15 @@ Ten domains, each with an explicit checklist you can review (and veto) before th
 - **Nothing is deleted** — fixes quarantine files with a manifest; deletion comes weeks later
 - **Nothing leaves your machine** — no telemetry, no uploads; share cards are opt-in and sanitized (emails, API-key shapes, tokens, UUIDs and user paths auto-masked, and rendering **fails closed** if anything secret-shaped survives). The masking is a seatbelt, not a guarantee — glance at a card before you post it
 - If a permission guard blocks a fix, the skill stops and reports instead of routing around it
+
+## The philosophy
+
+An AI workspace checkup is not a cleanup script. It is a clinical protocol for
+trustworthy delegation: measure the hidden context, permissions, tools,
+automations and evidence trails that shape what your AI does before you let it
+act. The short version is: **diagnose first, treat only after consent, and make
+every finding inspectable.** See
+[`docs/ai-checkup-philosophy.md`](docs/ai-checkup-philosophy.md).
 
 ## The principles baked in
 

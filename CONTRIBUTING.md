@@ -29,13 +29,16 @@ Issues and PRs are welcome, in English or Japanese. 日本語でどうぞ。
 ## Developing
 
 ```bash
+# run the standard-library test suite
+python3 -m unittest discover -s tests
+
 # render a dashboard from a sample
-python3 scripts/build_dashboard.py your-findings.json out.html
+python3 scripts/build_dashboard.py samples/dashboard.json /tmp/claude-code-doctor-dashboard.html
 
 # render share cards (needs Chrome/Chromium + Pillow)
-python3 scripts/build_share_cards.py your-cards.json out/
+python3 scripts/build_share_cards.py samples/share-cards.json /tmp/claude-code-doctor-cards/
 ```
 
 Input schemas: [`references/report-format.md`](references/report-format.md).
-Before a PR, run both scripts against your sample and eyeball the rendered
-HTML in a browser (CSS bugs only reveal themselves to eyes).
+Before a PR, run the tests, render both sample outputs, and eyeball the rendered
+HTML/cards in a browser (CSS bugs only reveal themselves to eyes).

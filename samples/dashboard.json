@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "lang": "en",
+    "title": "Sample Claude Code Setup Audit",
+    "date": "2026-07-02",
+    "method": "fictional read-only audit fixture",
+    "note": "diagnosis only, nothing changed",
+    "lede": "This sample uses fictional data so you can preview the dashboard renderer safely.",
+    "kicker": "CLAUDE CODE DOCTOR",
+    "footer": "claude-code-doctor sample"
+  },
+  "stats": [
+    {"n": "3", "unit": "", "label": "sample findings", "tone": "alert"},
+    {"n": "18,400", "unit": "tk", "label": "always-on load", "tone": "alert"},
+    {"n": "1", "unit": "", "label": "decision for the owner", "tone": "key"},
+    {"n": "0", "unit": "", "label": "changes made", "tone": "key"}
+  ],
+  "checkup": {
+    "comment": "The sample setup is usable, but the context tax and stale permissions would deserve a focused cleanup.",
+    "red_flags": [],
+    "systems": [
+      {"short": "CLAUDE.md", "domain": "CLAUDE.md hierarchy"},
+      {"short": "Settings", "domain": "Settings & permissions"},
+      {"short": "Skills", "domain": "Skills"}
+    ]
+  },
+  "decisions": [
+    {
+      "q": "Which paths are permanently no-go?",
+      "why": "The auditor needs explicit exclusions before scanning.",
+      "options": [
+        {"tag": "OPTION A", "body": "Keep the default personal, key, and patient-data exclusions."},
+        {"tag": "OPTION B", "body": "Add project-specific private directories before running."}
+      ]
+    }
+  ],
+  "top": [
+    {
+      "title": "Always-on instructions are doing too much work",
+      "tag": "context tax",
+      "body": "Several long notes are loaded every session even though they are only needed for rare workflows."
+    }
+  ],
+  "matrix": {
+    "A": {"title": "high impact x low effort", "when": "do now", "items": ["Move stale examples out of always-on context"], "prime": true},
+    "B": {"title": "high impact x mid effort", "when": "this week", "items": ["Split broad skills into tighter triggers"]},
+    "C": {"title": "high impact x high effort", "when": "plan it", "items": ["Design a repeatable quarterly checkup cadence"]},
+    "D": {"title": "low impact x low effort", "when": "while passing by", "items": ["Rename old scratch directories"], "skip": true}
+  },
+  "actions": [
+    {
+      "id": "RX-01",
+      "phase": "Phase 1",
+      "phase_when": "20 min, reversible",
+      "title": "Quarantine stale always-on notes",
+      "effect": "-4,000tk/session",
+      "effort": "20 min",
+      "risk": "safe",
+      "steps": ["Back up the current CLAUDE.md", "Move dated examples to an archive", "Re-count the always-on load"],
+      "prompt": "Back up the current CLAUDE.md, move stale examples to a dated quarantine folder with a MANIFEST.tsv, verify the file still renders, then report the token-count delta. Do not delete anything."
+    }
+  ],
+  "phases": [
+    {"name": "Phase 0", "when": "before fixes", "steps": ["Confirm no-go paths", "Back up settings and command files"]},
+    {"name": "Phase 1", "when": "first cleanup", "steps": ["Handle reversible context and permission items only"]}
+  ],
+  "trees": [
+    {"title": "Sample state map", "body": "~/.claude/\n  CLAUDE.md\n  settings.json\n  skills/\n  agents/"}
+  ],
+  "domains": [
+    {
+      "name": "CLAUDE.md hierarchy",
+      "sub": "Always-on instructions and inherited context",
+      "summary": "The sample context contains useful guidance mixed with rare workflow details.",
+      "findings": [
+        {
+          "title": "Rare workflow notes load every session",
+          "severity": "high",
+          "effort": "low",
+          "detail": "Three long examples are loaded before every task.",
+          "recommendation": "Move examples behind a skill or command-specific reference."
+        }
+      ]
+    },
+    {
+      "name": "Settings & permissions",
+      "sub": "Allowed tools, denied paths, and guardrails",
+      "summary": "The sample permissions are mostly scoped but contain stale entries.",
+      "findings": [
+        {
+          "title": "Dead allow-list entries",
+          "severity": "medium",
+          "effort": "low",
+          "detail": "Several allowed paths no longer exist.",
+          "recommendation": "Back up settings, remove dead entries, then validate JSON."
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "sub": "Skill triggers and supporting files",
+      "summary": "The sample skill set is healthy enough, with one trigger collision.",
+      "findings": [
+        {
+          "title": "Two skills share the same trigger word",
+          "severity": "low",
+          "effort": "medium",
+          "detail": "Both skills mention the same broad trigger phrase.",
+          "recommendation": "Make one description narrower and re-run the trigger scan."
+        }
+      ]
+    }
+  ]
+}

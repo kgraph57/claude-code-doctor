@@ -21,14 +21,77 @@ EFF_OK = {"low", "medium", "high"}
 def normalize(data):
     """Coerce LLM-generated JSON into safe shape: unknown enums, missing keys,
     stringly-typed numbers. One pass at the boundary so rendering never crashes."""
+    if not isinstance(data, dict):
+        sys.exit("Dashboard JSON root must be a JSON object.")
+    if not isinstance(data.get("meta"), dict):
+        data["meta"] = {}
+
+    data["stats"] = [s for s in data.get("stats", []) or [] if isinstance(s, dict)]
+
+    decisions = []
+    for d in data.get("decisions", []) or []:
+        if not isinstance(d, dict):
+            continue
+        d["options"] = [o for o in d.get("options", []) or [] if isinstance(o, dict)]
+        decisions.append(d)
+    data["decisions"] = decisions
+
+    if not isinstance(data.get("matrix"), dict):
+        data["matrix"] = {}
+    else:
+        data["matrix"] = {
+            key: value for key, value in data["matrix"].items()
+            if isinstance(value, dict)
+        }
+
+    actions = []
+    for a in data.get("actions", []) or []:
+        if not isinstance(a, dict):
+            continue
+        if a.get("risk") not in {"safe", "careful", "surgery"}:
+            a["risk"] = "safe"
+        a["steps"] = [str(s) for s in a.get("steps", []) or []]
+        actions.append(a)
+    data["actions"] = actions
+
+    phases = []
+    for p in data.get("phases", []) or []:
+        if not isinstance(p, dict):
+            continue
+        p["steps"] = [str(s) for s in p.get("steps", []) or []]
+        phases.append(p)
+    data["phases"] = phases
+
+    data["trees"] = [t for t in data.get("trees", []) or [] if isinstance(t, dict)]
+
+    domains = []
     for dom in data.get("domains", []) or []:
+        if not isinstance(dom, dict):
+            continue
+        dom.setdefault("name", "Untitled domain")
+        dom.setdefault("sub", "")
+        dom.setdefault("summary", "")
+        findings = []
         for f in dom.get("findings", []) or []:
+            if not isinstance(f, dict):
+                f = {"title": str(f)}
+            f.setdefault("title", "Untitled finding")
+            f.setdefault("detail", "")
+            f.setdefault("recommendation", "")
             if f.get("severity") not in SEV_W:
                 f["severity"] = "medium"
             if f.get("effort") not in EFF_OK:
                 f["effort"] = "medium"
+            findings.append(f)
+        dom["findings"] = findings
+        domains.append(dom)
+    data["domains"] = domains
+
     ck = data.get("checkup") or {}
+    systems = []
     for sy in ck.get("systems", []) or []:
+        if not isinstance(sy, dict):
+            continue
         if sy.get("score") is not None:
             try:
                 sy["score"] = max(0, min(100, int(float(str(sy["score"])))))
@@ -36,8 +99,11 @@ def normalize(data):
                 sy["score"] = None
         if sy.get("grade") not in (None, "A", "B", "C", "D", "E"):
             sy["grade"] = None
+        systems.append(sy)
+    ck["systems"] = systems
     if ck.get("overall") not in (None, "A", "B", "C", "D", "E"):
         ck["overall"] = None
+    data["checkup"] = ck
     return data
 
 
@@ -610,10 +676,21 @@ def main():
     if len(sys.argv) != 3:
         print(__doc__)
         sys.exit(1)
-    data = normalize(json.load(open(sys.argv[1])))
+    data = normalize(load_json(sys.argv[1]))
     out = build(data)
-    open(sys.argv[2], "w").write(out)
+    with open(sys.argv[2], "w", encoding="utf-8") as f:
+        f.write(out)
     print(f"OK {sys.argv[2]} ({len(out):,} bytes)")
+
+
+def load_json(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        sys.exit(f"Input file not found: {path}")
+    except json.JSONDecodeError as e:
+        sys.exit(f"Invalid JSON in {path}: line {e.lineno}, column {e.colno}: {e.msg}")
 
 
 if __name__ == "__main__":

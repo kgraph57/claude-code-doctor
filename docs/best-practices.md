@@ -4,6 +4,9 @@ Principles baked into this skill's design. The setup audit is one application;
 the principles carry over to research, review, and large refactors driven by
 frontier-class models (Claude Fable 5 / Opus) inside Claude Code.
 
+For the broader "why this is a checkup, not a cleanup script" frame, see
+[`ai-checkup-philosophy.md`](ai-checkup-philosophy.md).
+
 ## 1. Decide the shape of the work before you fire the model
 
 Don't open with "audit everything". Decide first:

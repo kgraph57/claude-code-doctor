@@ -14,6 +14,8 @@
 
 *現役の医師が作った、Claude Code環境の健康診断。*
 
+現在のリリース: **v0.2.0** — 哲学ドキュメント、サンプルfixture、レンダラーの厳しめテストを追加。詳細は [CHANGELOG.md](CHANGELOG.md)。
+
 </div>
 
 ---
@@ -65,6 +67,12 @@ read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
 >
 > **Linux**: 監査とダッシュボードはそのまま動きます（領域9はlaunchdの代わりにcron/systemdタイマーを確認。plutil系はmacOS限定）。**Windows**: 未対応（ロードマップ参照）。
 
+自分の環境をスキャンせずにレンダラーだけ試すなら:
+
+```bash
+python3 scripts/build_dashboard.py samples/dashboard.json /tmp/claude-code-doctor-dashboard.html
+```
+
 ## 何が得られるか
 
 以下のスクリーンショットはすべて**架空のサンプルデータ**です。あなたのレポートはあなたのマシン上でローカル生成され、外には出ません。
@@ -113,6 +121,10 @@ read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
 - **削除はしない** ── 修復はMANIFEST付き隔離。削除は後日
 - **データは外に出ない** ── テレメトリなし・アップロードなし。共有カードはオプトインで、メール・APIキー形状・トークン・UUID・ユーザーパスを自動マスクし、**秘密らしき文字列が残った場合は生成自体を拒否**（フェイルクローズド）。それでもマスクはシートベルトであって保証ではないので、投稿前に一目確認を
 - 修復中に権限ガードにブロックされたら、迂回せず停止して報告
+
+## この健康診断の哲学
+
+AIワークスペース健康診断は、掃除スクリプトではありません。安心してAIに任せるための臨床プロトコルです。AIが動く前に、隠れた文脈、permissions、tools、自動化、証拠記録を測ります。短く言えば、**先に診断し、同意の後にだけ治療し、すべてのfindingを点検可能にする**という考え方です。詳しくは [docs/ai-checkup-philosophy.ja.md](docs/ai-checkup-philosophy.ja.md)（[English](docs/ai-checkup-philosophy.md)）を参照してください。
 
 ## 焼き込まれた設計原則
 
