@@ -15,7 +15,7 @@
 
 *Claude Code環境に潜む文脈税、死に権限、MCP肥大、ゾンビ自動化を見つける。*
 
-現在のリリース: **v0.8.0** — Windows beta probe plan、ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モードを含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
+現在のリリース: **v0.9.0** — 60秒ウォークスルー生成、Windows beta probe plan、ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モードを含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
 
 </div>
 
@@ -72,6 +72,17 @@ open /tmp/claude-code-doctor-cards/
 ```
 
 サンプルデータはすべて架空です。実レポートはローカルで生成され、外には出ません。
+
+## 60秒ウォークスルー
+
+短いナレーション台本とHTMLキャプチャ面を生成できます。
+
+```bash
+python3 scripts/build_walkthrough.py docs/generated-demo
+open docs/generated-demo/demo-walkthrough.html
+```
+
+台本は [docs/walkthrough.md](docs/walkthrough.md) にもあります。
 
 ## 差分モード
 
@@ -259,7 +270,7 @@ AIワークスペース健康診断は、掃除スクリプトではありませ
 ## ロードマップ
 
 - [x] 健康スコア（0〜100点）・A〜E判定・レーダーチャート・レッドフラグ ── 実装済み
-- [ ] デモGIF / 60秒紹介動画
+- [x] 60秒ウォークスルー生成とcapture page ── 実装済み
 - [x] 差分モード: 前回の健診との比較（健診の本命）── 実装済み
 - [x] Windows path coverage beta: read-only PowerShell probe plan ── 実装済み
 - [x] CIモード: 常時ロード税が予算を超えたらPRを落とす ── 実装済み

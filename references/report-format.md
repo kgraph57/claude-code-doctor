@@ -160,6 +160,16 @@ The generated plan is documentation, not a scanner. It maps the ten domains to
 read-only PowerShell commands and names forbidden mutations such as `Set-Item`,
 `Remove-Item`, registry writes, and `schtasks /Change` or `/Delete`.
 
+## Walkthrough input
+
+```bash
+python3 scripts/build_walkthrough.py docs/generated-demo
+```
+
+The walkthrough builder generates a Markdown narration script and a
+self-contained HTML capture surface. It uses fictional fixture commands only and
+does not scan a machine.
+
 ## How to assign the matrix
 
 | Cell | Meaning | When to act |

@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.9.0 - 2026-07-02
+
+This release ships a 60-second walkthrough generator: a repeatable Markdown
+script and self-contained HTML capture surface for demos, GIFs, or short video
+walkthroughs.
+
+### Added
+
+- `scripts/build_walkthrough.py` for generating `demo-walkthrough.md` and
+  `demo-walkthrough.html`.
+- `docs/walkthrough.md` as the canonical narration script.
+- `docs/generated-demo/` generated demo artifacts.
+- CI coverage for the walkthrough generator.
+
+### Changed
+
+- README and README.ja now include a 60-second walkthrough quick command.
+- Roadmap now marks the 60-second walkthrough generator as shipped.
+
 ## v0.8.0 - 2026-07-02
 
 This release ships Windows beta coverage: a read-only PowerShell probe plan that

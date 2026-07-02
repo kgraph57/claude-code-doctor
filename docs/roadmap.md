@@ -65,6 +65,18 @@ PowerShell probe plan, not an opaque script.
   Scheduler changes.
 - Keep Windows marked beta until a real Windows checkup report is contributed.
 
+## v0.9.0 - 60-Second Walkthrough
+
+Shipped in this release. The demo is a reproducible script plus a self-contained
+HTML capture page, so a GIF or short video can be recorded without improvising.
+
+- Generate `demo-walkthrough.md` and `demo-walkthrough.html` with
+  `scripts/build_walkthrough.py`.
+- Cover the story in six 10-second beats.
+- Include the exact local demo commands for dashboard, diff, budget, domain
+  packs, adapters, and Windows beta probes.
+- Keep the demo fixture-based and fictional-data-only.
+
 ## What We Will Not Build
 
 - No default auto-fix mode. Diagnosis and treatment stay separate.

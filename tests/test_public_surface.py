@@ -13,9 +13,10 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.md")
 
         for needle in [
-            "Current release: **v0.8.0**",
+            "Current release: **v0.9.0**",
             "## Paste This Into Claude Code",
             "## Demo In 10 Seconds",
+            "## 60-Second Walkthrough",
             "## Diff Mode",
             "## CI Budget Gate",
             "## Community Domain Packs",
@@ -29,6 +30,7 @@ class PublicSurfaceTests(unittest.TestCase):
             "scripts/validate_domain_pack.py domain-packs/security-team.md",
             "scripts/validate_adapter_notes.py docs/adapters/*.md",
             "scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md",
+            "scripts/build_walkthrough.py docs/generated-demo",
         ]:
             self.assertIn(needle, readme)
         self.assertNotIn("cards.html", readme)
@@ -37,9 +39,10 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.ja.md")
 
         for needle in [
-            "現在のリリース: **v0.8.0**",
+            "現在のリリース: **v0.9.0**",
             "## Claude Codeに貼る",
             "## 10秒デモ",
+            "## 60秒ウォークスルー",
             "## 差分モード",
             "## CI予算ゲート",
             "## コミュニティ領域パック",
@@ -53,16 +56,17 @@ class PublicSurfaceTests(unittest.TestCase):
             "scripts/validate_domain_pack.py domain-packs/security-team.md",
             "scripts/validate_adapter_notes.py docs/adapters/*.md",
             "scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md",
+            "scripts/build_walkthrough.py docs/generated-demo",
         ]:
             self.assertIn(needle, readme)
         self.assertNotIn("cards.html", readme)
 
-    def test_changelog_leads_with_v080(self):
+    def test_changelog_leads_with_v090(self):
         changelog = self.read("CHANGELOG.md")
 
-        self.assertLess(changelog.index("## v0.8.0"), changelog.index("## v0.7.0"))
-        self.assertIn("Windows beta coverage", changelog)
-        self.assertIn("build_windows_probe_plan.py", changelog)
+        self.assertLess(changelog.index("## v0.9.0"), changelog.index("## v0.8.0"))
+        self.assertIn("60-second walkthrough", changelog)
+        self.assertIn("build_walkthrough.py", changelog)
 
     def test_roadmap_names_next_public_milestones(self):
         roadmap = self.read("docs/roadmap.md")
@@ -86,6 +90,7 @@ class PublicSurfaceTests(unittest.TestCase):
         self.assertIn("scripts/validate_domain_pack.py domain-packs/*.md", workflow)
         self.assertIn("scripts/validate_adapter_notes.py docs/adapters/*.md", workflow)
         self.assertIn("scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md", workflow)
+        self.assertIn("scripts/build_walkthrough.py docs/generated-demo", workflow)
 
         for path in [
             ".github/ISSUE_TEMPLATE/checkup-grade.yml",
@@ -110,6 +115,9 @@ class PublicSurfaceTests(unittest.TestCase):
             "docs/adapters/cursor.md",
             "docs/adapters/opencode.md",
             "docs/windows.md",
+            "docs/walkthrough.md",
+            "docs/generated-demo/demo-walkthrough.md",
+            "docs/generated-demo/demo-walkthrough.html",
         ]:
             self.assertTrue((ROOT / path).exists(), path)
 

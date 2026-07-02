@@ -15,7 +15,7 @@
 
 *Find the context tax, dead permissions, MCP bloat, and zombie automations hiding in your Claude Code setup.*
 
-Current release: **v0.8.0** — Windows beta probe plan, Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, and Diff Mode. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **v0.9.0** — 60-second walkthrough generator, Windows beta probe plan, Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, and Diff Mode. See [CHANGELOG.md](CHANGELOG.md).
 
 </div>
 
@@ -77,6 +77,17 @@ open /tmp/claude-code-doctor-cards/
 
 All sample data is fictional. Your real report is generated locally and never
 leaves your machine.
+
+## 60-Second Walkthrough
+
+Generate a short narration script and HTML capture surface:
+
+```bash
+python3 scripts/build_walkthrough.py docs/generated-demo
+open docs/generated-demo/demo-walkthrough.html
+```
+
+The script is also available as [docs/walkthrough.md](docs/walkthrough.md).
 
 ## Diff Mode
 
@@ -287,7 +298,7 @@ Yes — reports and the dashboard follow your language (<code>meta.lang: "en" | 
 ## Roadmap
 
 - [x] Health score (0-100), A-E grades, radar chart, red flags — shipped
-- [ ] Demo GIF / 60-second video walkthrough
+- [x] 60-second walkthrough generator and capture page — shipped
 - [x] Diff mode: compare against your last checkup (the real point of a checkup) — shipped
 - [x] Windows path coverage beta: read-only PowerShell probe plan — shipped
 - [x] CI mode: fail a PR when the always-on token tax crosses a budget — shipped
