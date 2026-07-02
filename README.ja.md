@@ -32,6 +32,12 @@ Claude Codeの環境は庭のように育ちます。足したスキル、承認
 
 あなたの環境は違う数字のはずです。それこそがポイントで、見てみるまで分かりません。このスキルは「見てみる」を安く・安全に・ちょっと楽しくします。
 
+不健康な環境は、不健康なAIを育てます。設定で肥満化したAIは毎セッション重い体を引きずって起動し、動きが鈍り、変な行動をし始めます。あなたが今育てているのは未来の相棒です。太らせたままにしないでください。
+
+<p align="center">
+<img src="docs/assets/bloated-vs-fit.png" alt="設定のガラクタで肥満化して鈍くなったAIロボットと、健診を経て引き締まった同じロボット" width="82%">
+</p>
+
 ## 仕組み
 
 <img src="docs/assets/how-it-works.png" alt="診断が先、治療はGOの後。5ステップ: スコープ確認、read-only監査10体のファンアウト、構造化findings、影響度×工数トリアージ、承認ゲート" width="100%">
@@ -56,6 +62,10 @@ read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
 > 必要環境: 監査とMarkdownレポートは追加依存なし。HTMLダッシュボードはPython標準ライブラリのみ。共有カードPNG（任意機能）だけheadless ChromeとPillowが必要。
 
 ## 何が得られるか
+
+**人間ドックのような健診結果表。** あなたの環境を身体として診ます。CLAUDE.mdは脳、settingsは心臓、MCPは血管、ディスクは体脂肪。系統ごとに0〜100点のスコアとA〜E判定（A=異常なし〜E=要治療）、10軸のレーダーチャート。平文の鍵や個人ファイルのgit追跡のような危険な所見は、点数に関係なく判定を強制的に落とす**レッドフラグ**として明示されます。採点モデルは [`references/scoring.md`](references/scoring.md) に全文書化:
+
+<img src="docs/examples/checkup.png" alt="健診結果: 総合判定D 35/100、10系統のレーダーチャート、レッドフラグ、臓器別判定付き人体マップ" width="100%">
 
 **1枚のHTMLダッシュボード**。数字サマリ、あなたにしか決められない決定事項（OPTION A/B形式）、影響度×工数マトリクス、段階的修復プラン、全指摘の折りたたみ表示（事実＋提案のペア）:
 
@@ -96,7 +106,7 @@ read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
 
 ## 焼き込まれた設計原則
 
-このリポ自体が、Claude Codeでフロンティアモデルを使い倒すベストプラクティスの実装例です。詳細は [docs/best-practices.ja.md](docs/best-practices.ja.md)（[English](docs/best-practices.md)）:
+このリポ自体が、Claude Codeでフロンティアモデルを使い倒すベストプラクティスの実装例です。**Claude Fable 5** と **Opus 4.8** で開発・実戦検証済みで、「Fable 5を使い始めたけどコンテキストがどこに消えているか分からない」人が最初に回すと効きます。詳細は [docs/best-practices.ja.md](docs/best-practices.ja.md)（[English](docs/best-practices.md)）:
 
 1. 仕事の形を決めてからモデルを撃つ
 2. read-only並列ファンアウト＋上位モデルでの統合

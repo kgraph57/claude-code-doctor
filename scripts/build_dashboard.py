@@ -11,6 +11,25 @@ import html
 import sys
 
 SEV_RANK = {"high": 0, "medium": 1, "low": 2}
+GRADE_ORDER = ["A", "B", "C", "D", "E"]
+
+
+def compute_score(findings):
+    """0-100 health score from a domain's findings (severity-weighted burden)."""
+    burden = sum({"high": 3, "medium": 1, "low": 0.25}[f["severity"]] for f in findings)
+    return max(5, round(100 - 5 * burden))
+
+
+def grade_from_score(score):
+    for grade, floor in (("A", 95), ("B", 80), ("C", 55), ("D", 25)):
+        if score >= floor:
+            return grade
+    return "E"
+
+
+def has_red_flag(findings):
+    """Critical findings (marked "critical": true) force grade E regardless of score."""
+    return any(f.get("critical") for f in findings)
 
 LABELS = {
     "en": {
@@ -22,6 +41,11 @@ LABELS = {
         "matrix_t": "Impact x Effort matrix", "matrix_d": "Start from A.",
         "phases_t": "Phased plan", "phases_d": "Executed only after approval.",
         "trees_t": "Current state map", "trees_d": "Measured snapshot.",
+        "checkup_t": "The checkup report",
+        "checkup_d": "Your Claude Code setup, examined as a body. Grades follow a standard checkup scale.",
+        "overall": "Overall",
+        "grades": {"A": "Healthy", "B": "Minor findings", "C": "Watch",
+                   "D": "Needs work", "E": "Treat now"},
         "domains_t": "All {n} findings by domain",
         "domains_d": "Each finding pairs evidence with a proposal. Nothing has been executed.",
         "fact": "Evidence", "rec": "Proposal",
@@ -38,6 +62,11 @@ LABELS = {
         "matrix_t": "影響度 × 工数マトリクス", "matrix_d": "Aから順に着手する。",
         "phases_t": "段階的実行プラン", "phases_d": "全フェーズ承認後に実行。",
         "trees_t": "現状マップ", "trees_d": "実測値ベースのスナップショット。",
+        "checkup_t": "健診結果",
+        "checkup_d": "あなたのClaude Codeという身体の状態。判定は人間ドックの5段階。",
+        "overall": "総合判定",
+        "grades": {"A": "異常なし", "B": "軽度所見", "C": "要経過観察",
+                   "D": "要精密検査", "E": "要治療"},
         "domains_t": "全指摘 {n}件（領域別）",
         "domains_d": "各指摘は「事実」と「提案」のペア。提案は未実行。",
         "fact": "事実", "rec": "提案",
@@ -46,6 +75,44 @@ LABELS = {
         "footer_note": "read-only 監査・承認前変更なし",
     },
 }
+
+def radar_svg(systems):
+    """Decagon radar chart of per-system scores (0-100)."""
+    import math
+    cx, cy, r = 205, 160, 112
+    n = len(systems)
+    if n < 3:
+        return ""
+
+    def pt(i, frac):
+        a = -math.pi / 2 + 2 * math.pi * i / n
+        return (cx + r * frac * math.cos(a), cy + r * frac * math.sin(a))
+
+    rings = []
+    for frac in (0.25, 0.5, 0.75, 1.0):
+        pts = " ".join(f"{x:.1f},{y:.1f}" for x, y in (pt(i, frac) for i in range(n)))
+        rings.append(f'<polygon points="{pts}" fill="none" stroke="#e3e5e7" stroke-width="1"/>')
+    axes = []
+    labels = []
+    for i, sy in enumerate(systems):
+        x, y = pt(i, 1.0)
+        axes.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#e3e5e7" stroke-width="1"/>')
+        lx, ly = pt(i, 1.22)
+        anchor = "middle" if abs(lx - cx) < 12 else ("start" if lx > cx else "end")
+        label = html.escape(str(sy.get("organ", ""))[:18])
+        labels.append(f'<text x="{lx:.1f}" y="{ly:.1f}" font-size="10.5" fill="#5c6166" '
+                      f'text-anchor="{anchor}" dominant-baseline="middle">{label}</text>')
+    data_pts = " ".join(
+        f"{x:.1f},{y:.1f}" for x, y in
+        (pt(i, max(0.04, sy["score"] / 100)) for i, sy in enumerate(systems)))
+    dots = "".join(
+        f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3" fill="#0B7DA3"/>' for x, y in
+        (pt(i, max(0.04, sy["score"] / 100)) for i, sy in enumerate(systems)))
+    return (f'<svg viewBox="0 0 410 320" font-family="Helvetica Neue,Inter,sans-serif">'
+            f'{"".join(rings)}{"".join(axes)}'
+            f'<polygon points="{data_pts}" fill="rgba(11,125,163,.14)" '
+            f'stroke="#0B7DA3" stroke-width="2"/>{dots}{"".join(labels)}</svg>')
+
 
 CSS = """
 :root{--ink:#1a1a1a;--sub:#5c6166;--faint:#9aa0a5;--line:#e3e5e7;
@@ -157,6 +224,46 @@ pre.tree{font-family:"SF Mono",Menlo,monospace;font-size:12px;line-height:1.75;
 .fbody p{max-width:62em;margin-bottom:8px}
 .flabel{font-family:"Helvetica Neue",Inter,sans-serif;font-size:10.5px;
   letter-spacing:.16em;color:var(--teal);font-weight:700;margin:10px 0 2px}
+/* checkup */
+.overallrow{display:grid;grid-template-columns:170px 1fr 360px;gap:34px;align-items:center;
+  border:1.5px solid var(--ink);padding:26px 32px;margin-bottom:40px}
+.overallrow .radar svg{width:100%;height:auto}
+.overallrow .oscore{font-size:13px;color:var(--sub);margin-top:8px;
+  font-family:"Helvetica Neue",Inter,sans-serif}
+.redflags{border:1.5px solid var(--orange);padding:16px 22px;margin:0 0 36px;
+  font-size:13px;line-height:1.8}
+.redflags b{color:var(--orange);font-family:"Helvetica Neue",Inter,sans-serif;
+  font-size:11px;letter-spacing:.14em;display:block;margin-bottom:4px}
+@media(max-width:860px){.overallrow{grid-template-columns:1fr}}
+.overallrow .og{display:flex;align-items:baseline;gap:14px}
+.overallrow .og b{font-family:"Helvetica Neue",Inter,sans-serif;font-size:74px;
+  font-weight:800;line-height:1}
+.overallrow .og span{font-size:14px;color:var(--sub)}
+.overallrow p{font-size:14px;color:#333;max-width:56em;line-height:1.9}
+.overallrow .ol{font-size:11px;letter-spacing:.16em;color:var(--teal);font-weight:700;
+  font-family:"Helvetica Neue",Inter,sans-serif;margin-bottom:6px}
+.bodymap{display:grid;grid-template-columns:1fr 250px 1fr;gap:0 26px;align-items:center}
+.syscol{display:flex;flex-direction:column;gap:14px}
+.sys{border:1px solid var(--line);padding:14px 16px;display:grid;
+  grid-template-columns:44px 1fr;gap:14px;align-items:center;background:var(--bg)}
+.sys .note{grid-column:1/-1;font-size:12px;color:var(--sub);line-height:1.65;
+  border-top:1px dashed var(--line);padding-top:8px;margin-top:2px}
+.gbadge{width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  font-family:"Helvetica Neue",Inter,sans-serif;font-size:24px;font-weight:800}
+.g-A{background:var(--teal);color:#fff}
+.g-B{border:2px solid var(--teal);color:var(--teal)}
+.g-C{border:2px solid var(--ink);color:var(--ink)}
+.g-D{border:2px solid var(--orange);color:var(--orange)}
+.g-E{background:var(--orange);color:#fff}
+.sys .organ{font-size:10.5px;letter-spacing:.14em;color:var(--teal);font-weight:700;
+  font-family:"Helvetica Neue",Inter,sans-serif;text-transform:uppercase}
+.sys .dn{font-size:14px;font-weight:700;line-height:1.5}
+.sys .gl{font-size:11px;color:var(--sub)}
+.sys .gl i{font-style:normal;font-family:"Helvetica Neue",Inter,sans-serif;
+  color:var(--faint);margin-left:6px}
+.figure{display:flex;justify-content:center}
+.figure svg{width:220px;height:auto}
+@media(max-width:860px){.bodymap{grid-template-columns:1fr}.figure{order:-1}}
 .controls{margin-bottom:22px}
 .controls button{font:inherit;font-size:12px;padding:6px 14px;border:1px solid var(--line);
   background:var(--bg);cursor:pointer;color:var(--sub)}
@@ -200,6 +307,71 @@ def build(data):
         f'<p class="lede">{esc(meta.get("lede", ""))}</p>'
         f'<div class="meta">{meta_html}</div>'
         f'<div class="stats">{stats_html}</div></header>')
+
+    if data.get("checkup"):
+        n += 1
+        ck = data["checkup"]
+        systems = list(ck.get("systems", []))
+        dom_by_name = {d["name"]: d for d in data.get("domains", [])}
+        red_flags = list(ck.get("red_flags", []))
+        for i, sy in enumerate(systems):
+            dom = dom_by_name.get(sy.get("domain", ""))
+            if dom is None and i < len(data.get("domains", [])):
+                dom = data["domains"][i]
+            findings = dom.get("findings", []) if dom else []
+            if sy.get("score") is None:
+                sy["score"] = compute_score(findings) if findings else 85
+            if not sy.get("grade"):
+                sy["grade"] = grade_from_score(sy["score"])
+                if findings and has_red_flag(findings):
+                    sy["grade"] = "E"
+        overall_score = ck.get("overall_score")
+        if overall_score is None and systems:
+            overall_score = round(sum(sy["score"] for sy in systems) / len(systems))
+        overall = ck.get("overall") or grade_from_score(overall_score or 85)
+        if any(sy["grade"] == "E" for sy in systems) and overall in ("A", "B"):
+            overall = "C"
+
+        def chip(sy):
+            g = sy["grade"]
+            return (f'<div class="sys"><div class="gbadge g-{g}">{g}</div><div>'
+                    f'<div class="organ">{esc(sy.get("organ", ""))}</div>'
+                    f'<div class="dn">{esc(sy.get("domain", ""))}</div>'
+                    f'<div class="gl">{esc(L["grades"][g])}<i>{sy["score"]}/100</i></div></div>'
+                    + (f'<div class="note">{esc(sy["note"])}</div>' if sy.get("note") else "")
+                    + '</div>')
+
+        half = (len(systems) + 1) // 2
+        left = "".join(chip(sy) for sy in systems[:half])
+        right = "".join(chip(sy) for sy in systems[half:])
+        svg = ('<svg viewBox="0 0 200 430" fill="none" stroke="#1a1a1a" '
+               'stroke-width="2.5"><circle cx="100" cy="42" r="27"/>'
+               '<rect x="67" y="76" width="66" height="132" rx="28"/>'
+               '<rect x="36" y="84" width="22" height="112" rx="11"/>'
+               '<rect x="142" y="84" width="22" height="112" rx="11"/>'
+               '<rect x="71" y="212" width="25" height="142" rx="12"/>'
+               '<rect x="104" y="212" width="25" height="142" rx="12"/>'
+               '<g fill="#0B7DA3" stroke="none"><circle cx="100" cy="42" r="4"/>'
+               '<circle cx="88" cy="108" r="4"/><circle cx="100" cy="150" r="4"/>'
+               '<circle cx="47" cy="150" r="4"/><circle cx="153" cy="150" r="4"/>'
+               '<circle cx="100" cy="190" r="4"/><circle cx="83" cy="280" r="4"/>'
+               '<circle cx="116" cy="280" r="4"/></g></svg>')
+        rf_html = ""
+        if red_flags:
+            rf_html = ('<div class="redflags"><b>RED FLAGS</b>'
+                       + "<br>".join(esc(r) for r in red_flags) + "</div>")
+        body = (f'<div class="overallrow"><div><div class="ol">{esc(L["overall"])}</div>'
+                f'<div class="og"><b>{esc(overall)}</b>'
+                f'<span>{esc(L["grades"][overall])}</span></div>'
+                f'<div class="oscore">{overall_score if overall_score is not None else ""}'
+                f'{" / 100" if overall_score is not None else ""}</div></div>'
+                f'<p>{esc(ck.get("comment", ""))}</p>'
+                f'<div class="radar">{radar_svg(systems)}</div></div>'
+                + rf_html
+                + f'<div class="bodymap"><div class="syscol">{left}</div>'
+                f'<div class="figure">{svg}</div>'
+                f'<div class="syscol">{right}</div></div>')
+        parts.append(section(n, L["checkup_t"], L["checkup_d"], body))
 
     if data.get("decisions"):
         n += 1

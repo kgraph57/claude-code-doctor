@@ -87,3 +87,28 @@
 
 Destructive operations always follow: backup → quarantine (with MANIFEST) →
 verify → delete later.
+
+## Checkup input (body map + radar + grades)
+
+```json
+{
+  "checkup": {
+    "comment": "doctor's one-paragraph comment",
+    "overall": "D",            
+    "overall_score": 35,       
+    "red_flags": ["critical finding 1", "critical finding 2"],
+    "systems": [
+      {"organ": "Brain", "domain": "CLAUDE.md hierarchy",
+       "grade": "D", "score": 18, "note": "optional one-liner"}
+    ]
+  }
+}
+```
+
+- `systems[]`: first half renders left of the figure, second half right.
+  `grade`/`score` are optional — computed from the matching `domains[]` entry
+  (by name, falling back to index) per `scoring.md`.
+- Findings may carry `"critical": true` — any critical finding forces that
+  domain's grade to E (red-flag override).
+- `red_flags[]`: strings shown in the RED FLAGS box.
+- Scoring model and organ mapping: see `scoring.md`.

@@ -32,6 +32,12 @@ Claude Code setups grow like gardens. Every skill you add, every permission you 
 
 Your setup is different. That's the point — you won't know until you look. This skill makes looking cheap, safe, and honestly kind of fun.
 
+An unhealthy setup means an unhealthy AI: bloated with config it drags into every session, slow to start, prone to weird moves. You are raising this thing — keep it fit.
+
+<p align="center">
+<img src="docs/assets/bloated-vs-fit.png" alt="A bloated, sluggish AI robot weighed down by config clutter versus the same robot lean and fit after a checkup" width="82%">
+</p>
+
 ## How it works
 
 <img src="docs/assets/how-it-works.png" alt="Diagnosis first. Treatment only after you say go. Five steps: scope, fan out 10 read-only auditors, structured findings, impact x effort triage, approval gate." width="100%">
@@ -56,6 +62,10 @@ or simply `/doctor`. The skill first confirms the scan scope and your **no-go pa
 > Requirements: none for the audit and Markdown report. The HTML dashboard uses only the Python standard library. Share-card PNGs (optional) need headless Chrome + Pillow.
 
 ## What you get
+
+**A checkup report, like the one from your annual physical.** Your setup is examined as a body — CLAUDE.md is the brain, settings the heart, MCP the blood vessels, disk the body fat. Each system gets a 0-100 score and an A-E grade (A "healthy" through E "treat now"), plotted on a 10-axis radar chart. Critical dangers — plaintext credentials, private files tracked by git — are **red flags** that force a failing grade no matter the arithmetic. The scoring model is fully documented in [`references/scoring.md`](references/scoring.md):
+
+<img src="docs/examples/checkup.png" alt="Checkup report: overall grade D 35/100, radar chart of ten body systems, red flags box, body map with per-organ grades" width="100%">
 
 **A one-page HTML dashboard** — stat band, the decisions only you can make (as OPTION A/B), an impact-x-effort matrix, a phased fix plan, and every finding as collapsible evidence + proposal:
 
@@ -96,7 +106,7 @@ Ten domains, each with an explicit checklist you can review (and veto) before th
 
 ## The principles baked in
 
-This repo doubles as a working example of frontier-model best practices in Claude Code — see [docs/best-practices.md](docs/best-practices.md):
+This repo doubles as a working example of frontier-model best practices in Claude Code — built with and battle-tested on **Claude Fable 5** and **Opus 4.8**, and a good first thing to run if you just got Fable 5 access and wonder where your context budget goes. See [docs/best-practices.md](docs/best-practices.md):
 
 1. Decide the shape of the work before you fire the model
 2. Read-only parallel fan-out, top-tier synthesis
