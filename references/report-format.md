@@ -133,6 +133,18 @@ and 10 domain summaries, and intentionally omit raw paths, full findings, action
 prompts, and local report text. The validator fails closed when it sees raw user
 paths, emails, API-key shapes, bearer tokens, or other secret-shaped strings.
 
+## Renderer bug input
+
+```bash
+python3 scripts/validate_renderer_bug.py samples/renderer-bug-dashboard.json
+```
+
+Renderer bug reports are for public reproduction fixtures, not full local
+reports. They use `claude-code-doctor-renderer-bug-v1`, identify the renderer,
+include a minimal fictional `input`, and spell out command / expected / actual /
+environment. The validator fails closed when it sees raw user paths, emails,
+API-key shapes, bearer tokens, or other secret-shaped strings.
+
 ## Domain pack input
 
 ```bash

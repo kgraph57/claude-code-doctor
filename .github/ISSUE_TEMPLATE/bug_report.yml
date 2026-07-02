@@ -7,6 +7,8 @@ body:
     attributes:
       value: |
         Please sanitize all examples. Do not paste secrets, private paths, patient data, customer data, or raw local reports.
+        Renderer bug? Prefer a fictional fixture and validate it first:
+        `python3 scripts/validate_renderer_bug.py samples/renderer-bug-dashboard.json`
   - type: dropdown
     id: area
     attributes:

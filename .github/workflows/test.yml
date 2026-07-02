@@ -45,6 +45,9 @@ jobs:
       - name: Validate contributed report fixture
         run: python scripts/validate_contributed_report.py samples/contributed-report.json
 
+      - name: Validate renderer bug fixture
+        run: python scripts/validate_renderer_bug.py samples/renderer-bug-dashboard.json
+
       - name: Build Windows probe plan
         run: python scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md
 

@@ -1,0 +1,41 @@
+{
+  "schema": "claude-code-doctor-renderer-bug-v1",
+  "renderer": "dashboard",
+  "doctor_version": "v0.12.0",
+  "input": {
+    "meta": {
+      "lang": "en",
+      "title": "Minimal fictional renderer bug fixture",
+      "date": "2026-07-02"
+    },
+    "stats": [
+      {"n": "1", "unit": "", "label": "fictional finding", "tone": "alert"}
+    ],
+    "domains": [
+      {
+        "name": "Fixture domain",
+        "summary": "Fictional renderer reproduction data only.",
+        "findings": [
+          {
+            "title": "Long label wraps badly",
+            "severity": "low",
+            "effort": "low",
+            "detail": "Fictional detail.",
+            "recommendation": "Adjust renderer wrapping."
+          }
+        ]
+      }
+    ]
+  },
+  "reproduction": {
+    "command": "python3 scripts/build_dashboard.py /tmp/ccd-bug.json /tmp/ccd-bug.html",
+    "expected": "The stat card renders inside the viewport.",
+    "actual": "The stat card overflows the fixture viewport.",
+    "environment": "macOS, Python 3.13, Chrome 126"
+  },
+  "safety": {
+    "fictional_data": true,
+    "no_private_paths": true,
+    "no_secrets": true
+  }
+}

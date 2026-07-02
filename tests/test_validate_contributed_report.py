@@ -95,10 +95,10 @@ class ValidateContributedReportTests(unittest.TestCase):
         workflow = (ROOT / ".github" / "workflows" / "test.yml").read_text(encoding="utf-8")
         docs = (ROOT / "docs" / "contributed-reports.md").read_text(encoding="utf-8")
 
-        self.assertIn("Current release: **v0.11.0**", readme)
+        self.assertIn("Current release: **v0.12.0**", readme)
         self.assertIn("## Contributed Reports", readme)
         self.assertIn("scripts/validate_contributed_report.py samples/contributed-report.json", readme)
-        self.assertIn("現在のリリース: **v0.11.0**", readme_ja)
+        self.assertIn("現在のリリース: **v0.12.0**", readme_ja)
         self.assertIn("## 投稿用レポート", readme_ja)
         self.assertIn("scripts/validate_contributed_report.py samples/contributed-report.json", workflow)
         self.assertIn("claude-code-doctor-contributed-report-v1", docs)

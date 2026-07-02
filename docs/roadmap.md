@@ -105,6 +105,20 @@ without asking people to paste raw local reports.
 - Provide a fictional valid fixture in `samples/contributed-report.json`.
 - Connect the checkup-grade issue template to the validator.
 
+## v0.12.0 - Renderer Bug Repro Intake
+
+Shipped in this release. Dashboard and share-card bugs can now be reported as
+small fictional fixtures instead of screenshots or raw local reports.
+
+- Validate `claude-code-doctor-renderer-bug-v1` JSON with
+  `scripts/validate_renderer_bug.py`.
+- Support dashboard and share-card renderer repros with command/expected/actual
+  fields.
+- Reject raw user paths, emails, API-key shapes, bearer tokens, and other
+  secret-shaped strings.
+- Provide a fictional dashboard repro in `samples/renderer-bug-dashboard.json`.
+- Connect the bug-report issue template to the validator.
+
 ## What We Will Not Build
 
 - No default auto-fix mode. Diagnosis and treatment stay separate.

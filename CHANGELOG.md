@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.12.0 - 2026-07-02
+
+This release ships renderer-bug validation: a safe minimal reproduction format
+for dashboard and share-card rendering issues.
+
+### Added
+
+- `scripts/validate_renderer_bug.py` for validating sanitized renderer bug
+  fixtures.
+- `samples/renderer-bug-dashboard.json` as a fictional valid dashboard repro.
+- `docs/renderer-bug-reports.md` with the public-safe bug report schema.
+- CI coverage for the renderer-bug validator.
+
+### Changed
+
+- README and README.ja now include a renderer-bug quick command.
+- The bug-report issue template now points contributors to the renderer-bug
+  validator.
+- Roadmap now marks renderer-bug validation as shipped.
+
 ## v0.11.0 - 2026-07-02
 
 This release ships contributed-report validation: a safe intake format for
