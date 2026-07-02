@@ -10,9 +10,42 @@ import json
 import html
 import sys
 
-SEV_JA = {"high": "影響 高", "medium": "影響 中", "low": "影響 低"}
-EFF_JA = {"low": "工数 低", "medium": "工数 中", "high": "工数 高"}
 SEV_RANK = {"high": 0, "medium": 1, "low": 2}
+
+LABELS = {
+    "en": {
+        "sev": {"high": "impact high", "medium": "impact med", "low": "impact low"},
+        "eff": {"low": "effort low", "medium": "effort med", "high": "effort high"},
+        "meta": [("Date", "date"), ("Method", "method"), ("Status", "note")],
+        "decisions_t": "Decisions you own", "decisions_d": "The AI does not decide. Pick an option per item.",
+        "top_t": "Top findings", "top_d": "Ordered by impact.",
+        "matrix_t": "Impact x Effort matrix", "matrix_d": "Start from A.",
+        "phases_t": "Phased plan", "phases_d": "Executed only after approval.",
+        "trees_t": "Current state map", "trees_d": "Measured snapshot.",
+        "domains_t": "All {n} findings by domain",
+        "domains_d": "Each finding pairs evidence with a proposal. Nothing has been executed.",
+        "fact": "Evidence", "rec": "Proposal",
+        "counts": ("high", "med", "low"),
+        "expand": "Expand all", "collapse": "Collapse all",
+        "footer_note": "read-only audit / no changes before approval",
+    },
+    "ja": {
+        "sev": {"high": "影響 高", "medium": "影響 中", "low": "影響 低"},
+        "eff": {"low": "工数 低", "medium": "工数 中", "high": "工数 高"},
+        "meta": [("実施日", "date"), ("方式", "method"), ("状態", "note")],
+        "decisions_t": "決めていただく事項", "decisions_d": "AIは決めません。方針だけください。",
+        "top_t": "最重要の発見", "top_d": "影響が大きい順。",
+        "matrix_t": "影響度 × 工数マトリクス", "matrix_d": "Aから順に着手する。",
+        "phases_t": "段階的実行プラン", "phases_d": "全フェーズ承認後に実行。",
+        "trees_t": "現状マップ", "trees_d": "実測値ベースのスナップショット。",
+        "domains_t": "全指摘 {n}件（領域別）",
+        "domains_d": "各指摘は「事実」と「提案」のペア。提案は未実行。",
+        "fact": "事実", "rec": "提案",
+        "counts": ("高", "中", "低"),
+        "expand": "すべて展開", "collapse": "すべて閉じる",
+        "footer_note": "read-only 監査・承認前変更なし",
+    },
+}
 
 CSS = """
 :root{--ink:#1a1a1a;--sub:#5c6166;--faint:#9aa0a5;--line:#e3e5e7;
@@ -148,6 +181,7 @@ def section(num, title, desc, body):
 
 def build(data):
     meta = data.get("meta", {})
+    L = LABELS.get(meta.get("lang", "en"), LABELS["en"])
     parts = []
     n = 0
 
@@ -159,8 +193,7 @@ def build(data):
         for s in data.get("stats", []))
     meta_html = "".join(
         f'<span><b>{esc(k)}</b>{esc(v)}</span>'
-        for k, v in [("実施日", meta.get("date", "")), ("方式", meta.get("method", "")),
-                     ("状態", meta.get("note", ""))] if v)
+        for k, key in L["meta"] for v in [meta.get(key, "")] if v)
     parts.append(
         f'<header><p class="kicker">{esc(meta.get("kicker", "CLAUDE CODE DOCTOR"))}</p>'
         f'<h1>{esc(meta.get("title", "環境監査"))}</h1>'
@@ -177,7 +210,7 @@ def build(data):
                 f'<div class="opt"><b>{esc(o["tag"])}</b>{esc(o["body"])}</div>'
                 for o in d.get("options", [])) + "</div></div></div>"
             for i, d in enumerate(data["decisions"]))
-        parts.append(section(n, "決めていただく事項", "AIは決めません。方針だけください。", body))
+        parts.append(section(n, L["decisions_t"], L["decisions_d"], body))
 
     if data.get("top"):
         n += 1
@@ -186,7 +219,7 @@ def build(data):
             + (f'<span class="tag">{esc(t["tag"])}</span>' if t.get("tag") else "")
             + f'</h3><p>{esc(t["body"])}</p></div></div>'
             for t in data["top"]) + "</div>"
-        parts.append(section(n, "最重要の発見", "影響が大きい順。", body))
+        parts.append(section(n, L["top_t"], L["top_d"], body))
 
     if data.get("matrix"):
         n += 1
@@ -198,7 +231,7 @@ def build(data):
             + "".join(f"<li>{esc(i)}</li>" for i in c.get("items", []))
             + "</ul></div>"
             for key, c in data["matrix"].items()) + "</div>"
-        parts.append(section(n, "影響度 × 工数マトリクス", "Aから順に着手する。", body))
+        parts.append(section(n, L["matrix_t"], L["matrix_d"], body))
 
     if data.get("phases"):
         n += 1
@@ -210,14 +243,14 @@ def build(data):
             + (f'<p class="note">{esc(p["note"])}</p>' if p.get("note") else "")
             + "</div></div>"
             for p in data["phases"])
-        parts.append(section(n, "段階的実行プラン", "全フェーズ承認後に実行。", body))
+        parts.append(section(n, L["phases_t"], L["phases_d"], body))
 
     if data.get("trees"):
         n += 1
         body = '<div class="maprow">' + "".join(
             f'<div><h3>{esc(t["title"])}</h3><pre class="tree">{esc(t["body"])}</pre></div>'
             for t in data["trees"]) + "</div>"
-        parts.append(section(n, "現状マップ", "実測値ベースのスナップショット。", body))
+        parts.append(section(n, L["trees_t"], L["trees_d"], body))
 
     if data.get("domains"):
         n += 1
@@ -231,30 +264,29 @@ def build(data):
                 c[f["severity"]] += 1
             items = "".join(
                 f'<details class="finding"><summary>'
-                f'<span class="chip sev {f["severity"]}">{SEV_JA[f["severity"]]}</span>'
-                f'<span class="chip eff">{EFF_JA[f["effort"]]}</span>'
+                f'<span class="chip sev {f["severity"]}">{L["sev"][f["severity"]]}</span>'
+                f'<span class="chip eff">{L["eff"][f["effort"]]}</span>'
                 f'<span class="ftitle">{esc(f["title"])}</span></summary>'
-                f'<div class="fbody"><p class="flabel">事実</p><p>{esc(f["detail"])}</p>'
-                f'<p class="flabel">提案</p><p>{esc(f["recommendation"])}</p></div></details>'
+                f'<div class="fbody"><p class="flabel">{L["fact"]}</p><p>{esc(f["detail"])}</p>'
+                f'<p class="flabel">{L["rec"]}</p><p>{esc(f["recommendation"])}</p></div></details>'
                 for f in fs)
             doms.append(
                 f'<details class="domain"><summary><span class="dname">{esc(d["name"])}</span>'
                 f'<span class="dsub">{esc(d.get("sub", ""))}</span>'
-                f'<span class="dcounts"><em>{c["high"]}</em> 高 / {c["medium"]} 中 / '
-                f'{c["low"]} 低</span></summary>'
+                f'<span class="dcounts"><em>{c["high"]}</em> {L["counts"][0]} / {c["medium"]} '
+                f'{L["counts"][1]} / {c["low"]} {L["counts"][2]}</span></summary>'
                 f'<p class="dsummary">{esc(d.get("summary", ""))}</p>{items}</details>')
         controls = ('<div class="controls">'
                     '<button onclick="document.querySelectorAll(\'details\')'
-                    '.forEach(d=>d.open=true)">すべて展開</button> '
+                    '.forEach(d=>d.open=true)">' + L["expand"] + '</button> '
                     '<button onclick="document.querySelectorAll(\'details\')'
-                    '.forEach(d=>d.open=false)">すべて閉じる</button></div>')
-        parts.append(section(n, f"全指摘 {total}件（領域別）",
-                             "各指摘は「事実」と「提案」のペア。提案は未実行。",
+                    '.forEach(d=>d.open=false)">' + L["collapse"] + '</button></div>')
+        parts.append(section(n, L["domains_t"].format(n=total), L["domains_d"],
                              controls + "".join(doms)))
 
     parts.append(
         f'<footer><span>{esc(meta.get("footer", "claude-code-doctor"))}</span>'
-        f'<span>read-only 監査・承認前変更なし</span></footer>')
+        f'<span>{L["footer_note"]}</span></footer>')
 
     return (f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
             f'<meta name="viewport" content="width=device-width, initial-scale=1.0">'

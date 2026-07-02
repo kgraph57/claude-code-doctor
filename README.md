@@ -1,79 +1,147 @@
-# claude-code-doctor
+<div align="center">
 
-**Claude Code環境の健康診断スキル。** read-onlyの並列サブエージェントで設定・スキル・権限・自動化を全数診断し、影響度×工数マトリクス付きのレポートとHTMLダッシュボード、共有用カードを生成します。診断中は一切変更せず、修復はあなたの承認後に1個ずつ。
+<img src="docs/assets/banner.png" alt="Claude Code Doctor — a health checkup for your Claude Code setup" width="100%">
 
-> A health checkup for your Claude Code setup, made by an actual doctor.
-> Read-only parallel audit, impact-x-effort triage, one-page HTML dashboard, shareable cards. English docs below.
+**English** | [日本語](README.ja.md)
 
-## なぜ作ったか
+[![License: MIT](https://img.shields.io/badge/License-MIT-0B7DA3.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-0B7DA3.svg)](https://github.com/kgraph57/claude-code-doctor/pulls)
+[![Made with Claude Code](https://img.shields.io/badge/made%20with-Claude%20Code-E8801A.svg)](https://claude.com/claude-code)
+[![GitHub stars](https://img.shields.io/github/stars/kgraph57/claude-code-doctor?style=social)](https://github.com/kgraph57/claude-code-doctor/stargazers)
 
-2年使い込んだ自分のClaude Code環境をClaude自身に監査させたら、**104件の指摘**が返ってきました。
+<h3>I let Claude Code audit its own setup.<br>It came back with 104 findings.</h3>
 
-- 常時ロード **45,000トークン**。毎セッション、仕事を始める前にコンテキストの22.5%が設定の読み込みで消えていた
-- permissions許可リスト**804件**。うち77件はもう存在しないパスへの「死に許可」
-- 常時注入されるMCPツール**63個**。機能が丸ごと重複するサーバーも
-- 毎朝空振りし続けるcronと常駐監視が**12本**。誰も気づいていなかった
+*A health checkup for your Claude Code setup — by an actual medical doctor.*
 
-設定は資産のつもりで、半分は家賃でした。この監査の手順をそのままスキル化したのが本リポジトリです。
+</div>
 
-<p>
-<img src="docs/examples/card2-numbers.png" width="49%" />
-<img src="docs/examples/card3-lessons.png" width="49%" />
-</p>
+---
 
-## 何をするか
+## Why this exists
 
-| フェーズ | 内容 | 書き込み |
-|---|---|---|
-| 診断 | 10領域をread-only並列サブエージェントで全数スキャン | なし（レポート1本のみ許可制） |
-| 統合 | 指摘を影響度×工数でマトリクス化・決定事項をOPTION形式で提示 | なし |
-| 出力 | Markdownレポート＋HTMLダッシュボード＋共有カード（希望時） | 承認した場所のみ |
-| 治療 | あなたの明示GO後に、止血項目を1個ずつ（バックアップ→実行→検証→報告） | 承認後のみ |
+Claude Code setups grow like gardens. Every skill you add, every permission you approve, every MCP server you try stays behind — and nobody ever looks back. After two years of heavy use, I asked Claude to audit my own environment, read-only. Here is what it found:
 
-診断する10領域: ディレクトリ構造 / 開発リポ / CLAUDE.md階層 / rules・settings・permissions・hooks / スキル / コマンド / サブエージェント / MCP・プラグイン / 自動化・Git / 利用実態・ディスク。
+| What | Found |
+|------|-------|
+| Always-on context loaded **every session** | **45,000 tokens** (22.5% of the window, gone before work starts) |
+| Permission allow-list entries | **804**, of which 77 pointed at paths that no longer exist |
+| MCP tools injected every session | **63**, including two servers that fully overlap |
+| Zombie automations failing silently every morning | **12** |
+| Skills with colliding trigger words | several clusters across **70** skills |
+| Reclaimable disk found along the way | **~200 GB** |
 
-## インストール
+Your setup is different. That's the point — you won't know until you look. This skill makes looking cheap, safe, and honestly kind of fun.
+
+## How it works
+
+<img src="docs/assets/how-it-works.png" alt="Diagnosis first. Treatment only after you say go. Five steps: scope, fan out 10 read-only auditors, structured findings, impact x effort triage, approval gate." width="100%">
+
+The whole trick is one separation: **diagnosis is strictly read-only, treatment happens only after you approve each fix.** Coverage comes from cheap models fanned out in parallel; judgment stays on the strong model; decisions stay with you.
+
+## Quick start
 
 ```bash
 git clone https://github.com/kgraph57/claude-code-doctor.git
 ln -s "$(pwd)/claude-code-doctor" ~/.claude/skills/claude-code-doctor
 ```
 
-依存: HTMLダッシュボードは標準ライブラリのみ。共有カード生成のみ headless Chrome と Pillow が必要（任意機能）。
+Then, inside Claude Code:
 
-## 使い方
-
-Claude Codeで:
-
-```
-read-onlyで私のClaude Code環境を監査して。承認前に変更禁止。
+```text
+audit my claude code setup, read-only. no changes before I approve.
 ```
 
-または `/doctor`。スキルが範囲と除外パス（個人情報など触ってほしくない場所）を先に確認してから走ります。
+or simply `/doctor`. The skill first confirms the scan scope and your **no-go paths** (folders the AI must never read — personal documents, keys, patient data), then fans out.
 
-## 設計原則（Fable 5クラスのモデルを有効活用するために）
+> Requirements: none for the audit and Markdown report. The HTML dashboard uses only the Python standard library. Share-card PNGs (optional) need headless Chrome + Pillow.
 
-このスキル自体が、フロンティアモデル×マルチエージェントのベストプラクティス実装例になるよう書かれています。詳細は [docs/best-practices-fable5.md](docs/best-practices-fable5.md)。
+## What you get
 
-1. **診断と治療を分離する** ── AIは提案まで、決めるのは人間。承認の言葉が曖昧なら止まる
-2. **read-only並列ファンアウト** ── 網羅は安いモデルの並列で、判断は上位モデルの1本で
-3. **構造化出力を強制する** ── findingsスキーマで受けるから、集計も可視化も機械的にできる
-4. **成果物は「見せられる形」まで** ── レポートで終わらせず、検証済みダッシュボードとサニタイズ済み共有カードまで
-5. **常時ロードは家賃** ── このスキル自身もprogressive disclosure（本文は薄く、詳細はreferences/）
+**A one-page HTML dashboard** — stat band, the decisions only you can make (as OPTION A/B), an impact-x-effort matrix, a phased fix plan, and every finding as collapsible evidence + proposal:
 
-## 安全性
+<img src="docs/examples/dashboard.png" alt="Example dashboard: stat band with 104 findings, decisions section with A/B options" width="100%">
 
-- 診断フェーズは完全read-only（変更系コマンド禁止をプロンプトに焼き込み）
-- ユーザー定義の立入禁止パス（読み取りも禁止）
-- 秘密情報らしき値は引用せず、存在の指摘のみ
-- 共有カードは実パス・実額・セキュリティ詳細を落とすサニタイズ規則＋自動パスマスク
+**Sanitized share cards** (optional) — brag about your findings without leaking your paths. Generated by the same scripts, with automatic path masking:
 
-## English
+<p align="center">
+<img src="docs/examples/en/card2-numbers.png" width="49%" alt="Share card: the rent you pay every session">
+<img src="docs/examples/en/card3-lessons.png" width="49%" alt="Share card: lessons learned">
+</p>
 
-`claude-code-doctor` audits your Claude Code setup with read-only parallel subagents across 10 domains (CLAUDE.md token tax, dead permission entries, MCP tool overload, skill trigger collisions, subagent model leaks, zombie automations, and more). Findings are triaged on an impact-x-effort matrix, rendered as a one-page HTML dashboard, and optionally exported as sanitized share cards. No changes are made until you explicitly approve each fix.
+## What gets checked
 
-Install: clone and symlink into `~/.claude/skills/`, then ask Claude Code to "audit my claude code setup, read-only". 
+Ten domains, each with an explicit checklist you can review (and veto) before the scan — full definitions in [`references/domains.md`](references/domains.md):
+
+| # | Domain | Examples of what it looks for |
+|---|--------|-------------------------------|
+| 1 | Directory structure | files parked in `~/` for years, dead dot-folders, Desktop/Downloads backlog |
+| 2 | Dev repositories | stray repos, bloated `.git` packs, nested/circular clones, missing CI |
+| 3 | CLAUDE.md hierarchy | the always-on token tax (as a number), duplication, stale dated notes |
+| 4 | Settings & permissions | dead allow entries, plaintext credentials, guardrail gaps, unscoped rules |
+| 5 | Skills | trigger-word collisions, misfire-prone descriptions, oversized single files |
+| 6 | Commands | command/skill duplicates that diverged, same name with different behavior |
+| 7 | Subagents | unpinned models (silent cost leak), reviewers holding Write access, dormant teams |
+| 8 | MCP & plugins | per-session tool tax, overlapping servers, ghost configs, dead ports |
+| 9 | Automations & git | cron/launchd zombies pointing at vanished paths, unrotated logs, stale branches |
+| 10 | Usage & disk | transcript remains, node_modules inside skills, oversized sessions |
+
+## Safety by design
+
+- **Read-only by prompt contract** — the mutation ban is baked into every subagent prompt
+- **No-go paths** — folders you designate are never read, not even traversed
+- **Secrets are never quoted** — path and existence only
+- **Nothing is deleted** — fixes quarantine files with a manifest; deletion comes weeks later
+- **Nothing leaves your machine** — no telemetry, no uploads; share cards are opt-in and sanitized (paths auto-masked)
+- If a permission guard blocks a fix, the skill stops and reports instead of routing around it
+
+## The principles baked in
+
+This repo doubles as a working example of frontier-model best practices in Claude Code — see [docs/best-practices.md](docs/best-practices.md):
+
+1. Decide the shape of the work before you fire the model
+2. Read-only parallel fan-out, top-tier synthesis
+3. Force structured output
+4. Separate diagnosis from treatment (user sovereignty)
+5. Carry deliverables to "showable" — and verify rendering before calling it done
+6. Always-on context is rent: measure it, then cut it
+
+## FAQ
+
+<details>
+<summary><b>Does it change anything on my machine?</b></summary>
+Not during diagnosis. The audit writes exactly one report file, to a location you approve first. Fixes run only after you explicitly approve each one, with backups and quarantine instead of deletion.
+</details>
+
+<details>
+<summary><b>Does my data go anywhere?</b></summary>
+No. Everything runs locally through your own Claude Code session. The share cards are an opt-in feature, and they sanitize aggregates only.
+</details>
+
+<details>
+<summary><b>How long does it take?</b></summary>
+Patient zero (a two-year-old heavy setup) took about 12 minutes with 10 parallel subagents. Sequential fallback takes longer.
+</details>
+
+<details>
+<summary><b>Does it work in Japanese?</b></summary>
+Yes — reports and the dashboard follow your language (<code>meta.lang: "en" | "ja"</code>). The skill itself is bilingual-triggered.
+</details>
+
+## Roadmap
+
+- [ ] Health score (0-100) with letter grade on the dashboard
+- [ ] Windows / Linux path coverage (currently tuned for macOS)
+- [ ] Diff mode: compare against your last checkup
+- [ ] CI mode: fail a PR when the always-on token tax crosses a budget
+
+Contributions welcome — issues and PRs, in English or Japanese.
+
+## Star history
+
+[![Star History Chart](https://api.star-history.com/svg?repos=kgraph57/claude-code-doctor&type=Date)](https://star-history.com/#kgraph57/claude-code-doctor&Date)
+
+If this saved you tokens, money, or a weekend of cleanup, a ⭐ helps other people find it.
 
 ## License
 
-MIT
+[MIT](LICENSE) — © 2026 [Ken Okamoto](https://github.com/kgraph57), pediatrician & AI builder, Tokyo.

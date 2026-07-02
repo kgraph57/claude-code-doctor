@@ -1,90 +1,125 @@
-# 診断領域の定義（10領域）
+# The 10 audit domains — what exactly gets checked
 
-各サブエージェントのプロンプトは「共通禁止事項 ＋ 領域指示」で構成する。
-findingsの出力形式は `report-format.md` のスキーマに従う。
+Each subagent prompt = common prohibition block + one domain definition below.
+Findings must follow the schema in `report-format.md`.
+Every domain lists its concrete checks so users can review (and veto) them upfront.
 
-## 共通禁止事項ブロック（全エージェントに前置する）
+## Common prohibition block (prepend to every agent)
 
+```text
+You are one auditor on a Claude Code setup-audit team. Operate strictly READ-ONLY.
+
+【Absolutely forbidden】
+- Any mutating operation: Write/Edit/mkdir/mv/rm/touch/git commit etc.
+  Allowed: read-only commands (ls/find/du/wc/head/grep/cat/stat/plutil -p/
+  git status/log/ls-files) and the Read/Grep/Glob tools.
+- User-designated no-go paths: {EXCLUDED_PATHS}. Never enter, read, or traverse
+  them with find.
+- Do not open personal documents or content files. File contents may be read ONLY
+  for Claude Code configuration files (CLAUDE.md/SKILL.md/rules/settings/hooks/
+  plist/scripts).
+- If you find anything that looks like a secret, report path and existence only.
+  Never quote the value.
+
+【Output】Findings need concrete paths and evidence. Report only verified facts,
+never guesses. Proposals are proposals — do not execute them.
 ```
-あなたはClaude Codeセットアップ監査チームの一員。完全READ-ONLYで診断する。
 
-【絶対禁止】
-- Write/Edit/mkdir/mv/rm/touch/git commit等の一切の変更操作。
-  使ってよいのは読み取り専用コマンド（ls/find/du/wc/head/grep/cat/stat/plutil -p/
-  git status/log/ls-files 等）とRead/Grep/Globツールのみ。
-- ユーザー指定の除外パス: {EXCLUDED_PATHS} には絶対に入らない・読まない・findで潜らない。
-- 個人文書・コンテンツファイルの中身は開かない。中身を読んでよいのは
-  Claude Code設定系ファイル（CLAUDE.md/SKILL.md/rules/settings/hooks/plist/スクリプト）のみ。
-- 秘密情報らしき値を見つけても引用しない（パスと存在の指摘のみ）。
+## Domain 1: Directory structure (home)
 
-【出力】findingsは具体的なパスとエビデンス付きで。推測で書かず、確認した事実のみ。
-改善提案は「提案」であり実行しない。
-```
+Checks:
+- Files parked directly in `~/` (and how long they have sat there)
+- Unknown-purpose folders: one-level `ls` to identify them by name only
+- Naming inconsistencies (language mix, numbering schemes, depth extremes)
+- Desktop / Downloads / Documents backlog, classified by age and type
+- Dead hidden dot-folders (alive or abandoned, judged by mtime)
+- Size measurements (`du`, skipping cloud mounts)
 
-## 領域1: ディレクトリ構造（ホーム全体）
+## Domain 2: Development repositories
 
-ホーム直下の全エントリを対象に、構造と命名だけを診断。
-直置きファイル・用途不明フォルダ（1階層lsで正体推定）・命名規則の不統一・
-Desktop/Downloads/Documentsの滞留（日付と種類で分類）・隠しフォルダの残骸
-（更新日から生死判定）・サイズ実測（du、クラウドマウント除く）。
+Checks:
+- Every git repo: current branch / dirty count / `.git` size
+  (`git count-objects -vH`) / last commit date
+- Repos living outside the canonical code directory (strays)
+- Nested repos and circular mirror clones
+- Per-repo presence of `.github/workflows`, pre-commit hooks, project `.claude/`
 
-## 領域2: 開発リポジトリ
+## Domain 3: CLAUDE.md hierarchy
 
-全gitリポの棚卸し: ブランチ / dirty件数 / .gitサイズ（git count-objects -vH）/
-最終コミット / 置き場所の一貫性（正位置以外の野良リポ）/ ネストしたリポ・ミラーの循環 /
-.github/workflows・pre-commit・プロジェクト.claude/ の有無一覧。
+Checks:
+- Inventory of every CLAUDE.md (bytes, estimated tokens, mtime); copies inside
+  build artifacts are flagged as "proliferation"
+- Close reading of user-global and project files: does content deserve always-on
+  loading / are procedures (skill material) mixed in / duplication across levels /
+  staleness of dated notes / contradictions between files
+- **Total always-on token tax, as a number** (for Japanese, bytes ÷ 1.8 as a rough guide)
 
-## 領域3: CLAUDE.md 階層
+## Domain 4: rules / settings / permissions / hooks
 
-全CLAUDE.md（find、node_modules・ビルド成果物は検出したら「増殖」として指摘）の
-一覧（バイト数・推定トークン・更新日）。ユーザーグローバルとプロジェクトの精読:
-常時ロードに値するか / 手続き（skillに移すべき手順）が混ざっていないか /
-階層間の重複 / 日付付き記述の鮮度 / 矛盾。常時ロード合計トークンの見積り
-（日本語はバイト数÷1.8目安）を必ず数値で出す。
+Checks:
+- settings.json: model and effort values vs. the user's own written policy
+- permissions allow/deny/ask: counts, dead entries pointing at paths that no longer
+  exist, corrupted entries, plaintext credentials, over-broad grants
+- Full hook inventory (which event calls which script; do the scripts exist)
+- Guardrail gaps: destructive-command blocking, secret blocking, formatters
+- rules/ scoping: which rules load always vs. path-scoped, and whether that's right
+- Backup-file sediment inside the config directory
+- Project-level settings relying entirely on global deny lists
 
-## 領域4: rules / settings / permissions / hooks
+## Domain 5: Skills
 
-settings.json精読: model・effort・permissionsのallow/deny/ask件数と質
-（存在しないパスへの死に許可・破損エントリ・秘密情報の平文・過剰な許可）/
-hooks全インベントリ（何が何を呼ぶか）/ ガードレールの空白（破壊的操作・secret・
-フォーマッタ）。rulesのスコープ（paths付与の有無と常時ロード妥当性）。
-バックアップファイルの堆積。プロジェクト側settingsとの整合（denyがグローバル頼みか）。
+Checks:
+- Every SKILL.md description: too vague to fire / too broad (misfires) /
+  trigger words colliding with other skills (build synonym clusters and cross-check)
+- Body granularity: oversized single files, progressive-disclosure violations
+- Broken layouts: ZIP files, loose .md files, directories missing SKILL.md
+- Archive hygiene and consistency
 
-## 領域5: スキル
+## Domain 6: Commands (duplication with skills)
 
-全SKILL.mdのdescription精査: 曖昧で未発火リスク / 広すぎて誤発火 /
-トリガー語の他スキルとの衝突（同義語クラスタを作って突合）。
-本文の粒度（異常に長いもの・progressive disclosure分離の有無）。
-壊れた配置（ZIP・平置き.md・SKILL.mdなしディレクトリ）。アーカイブ運用の一貫性。
+Checks:
+- Full command list crossed against skill names: (a) stubs left after migration
+  (b) live command-only entries (c) both-exist-but-diverged — most dangerous,
+  especially same name with different behavior across scopes
+- References to retired project names or nonexistent output paths
+- If a sync script maintains duplicates, identify sync direction and state
+  which side is safe to edit
 
-## 領域6: コマンド（skillsとの二重管理）
+## Domain 7: Subagents
 
-commands全数とskills名の突合: (a)スタブ化済みで残骸 (b)commandにしかない生きたもの
-(c)両方にあり内容が分岐（最危険。特に同名別機能）。廃止プロジェクト名・
-存在しない保存先パスの残存。自動同期対象なら同期方向を特定し「編集してよい側」を明記。
+Checks:
+- Every agent definition's frontmatter: is `model` pinned? (unpinned = inherits the
+  top-tier default = silent cost leak)
+- Tool discipline: do reviewer/critic roles carry Write/Edit they don't need?
+- Role duplication, superseded legacy teams
+- Dormant agents referenced by no skill, command, or script
+- Mechanical-work agents pinned to premium models
 
-## 領域7: サブエージェント
+## Domain 8: MCP servers and plugins
 
-全定義のfrontmatter精査: model指定の有無（未指定=親モデル継承のコスト漏れ）/
-tools規律（レビュー・批判役がWrite/Editを持っていないか）/
-役割重複・新旧二重定義 / どのスキル・スクリプトからも参照されない休眠体。
-機械作業系エージェントに上位モデルが割当っていないか。
+Checks:
+- Total tool count injected every session (context tax) per always-on server
+- Functionally overlapping servers
+- Dead configs: servers that fail to connect every session (e.g. localhost ports
+  nothing listens on)
+- Ghost project entries pointing at paths that no longer exist
+- Plugins with zero recorded usage; integrations stuck in needs-auth for weeks
 
-## 領域8: MCP・プラグイン
+## Domain 9: Automations and git hygiene
 
-常時接続サーバーのツール数合計（コンテキスト税）/ 機能重複するサーバー /
-接続失敗し続ける死に設定 / 存在しないパスのゴーストproject設定 /
-プラグインの利用実績（usageCount=0の放置）/ 未認証のまま放置された統合。
+Checks:
+- launchd/cron/scheduler inventory: does every referenced script exist / zombies
+  pointing at vanished paths (failing silently every day) / backup plists that could
+  be accidentally re-enabled / logs growing without rotation
+- Orphan scripts called by nothing
+- Git: commit-convention adherence in recent history / unmerged and stale branches /
+  presence of a CI net (types, lint, tests)
 
-## 領域9: 自動化・Git衛生
+## Domain 10: Usage reality and disk hygiene
 
-launchd/cron/スケジューラ全数: 呼び先スクリプトの実在 / 消滅パスを参照する
-ゾンビ（毎日空振り）/ バックアップplistの誤ロードリスク / ログの無限成長 /
-孤児スクリプト（どこからも呼ばれない）。Git: コミット規約の実態 /
-未マージ・staleブランチ / CIの網（型・lint・テスト）の有無。
+Checks:
+- Size breakdown of the config directory (`~/.claude` etc.): transcript remains from
+  old project paths / node_modules・virtualenvs・build output inside skills /
+  oversized single sessions / quantified cleanup candidates
 
-## 領域10: 利用実態・ディスク衛生
-
-設定ディレクトリ（~/.claude等）のサイズ内訳: 旧パスの遺物トランスクリプト /
-スキル内のnode_modules・venv・ビルド成果物 / 肥大セッション / 掃除候補の定量化。
-【重要】トランスクリプトの中身・会話内容は読まない。du/ls/wc/日付のみ。
+**Hard rule: never read transcript or conversation contents. du/ls/wc/dates only.**
