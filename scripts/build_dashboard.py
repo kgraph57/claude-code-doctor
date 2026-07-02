@@ -330,7 +330,7 @@ pre.tree{font-family:"SF Mono",Menlo,monospace;font-size:12px;line-height:1.75;
 .rxprompt summary{font-size:12px;color:var(--sub);cursor:pointer;list-style:none}
 .rxprompt summary::-webkit-details-marker{display:none}
 .rxprompt summary::before{content:"+ ";color:var(--teal);font-weight:700}
-.rxprompt[open] summary::before{content:"\2212 "}
+.rxprompt[open] summary::before{content:"\\2212 "}
 .rxprompt pre{font-family:"SF Mono",Menlo,monospace;font-size:12px;line-height:1.8;
   background:var(--panel);border:1px solid var(--line);padding:16px 18px;
   white-space:pre-wrap;margin:10px 0 8px}
