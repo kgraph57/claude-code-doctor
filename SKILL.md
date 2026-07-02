@@ -84,6 +84,10 @@ With all agent results in hand:
 
 1. **Markdown report** written to the single approved location
    (state map → matrix → ideal layout → phased plan)
+1. **Prescriptions (action plan)**: for every matrix-A/B item, write an `actions[]`
+   entry whose `prompt` is a ready-to-paste Claude Code instruction that executes
+   that one fix safely (backup → quarantine → verify baked in, ends with a report
+   step). A diagnosis without an executable action plan is not a deliverable.
 2. **HTML dashboard**: assemble the findings JSON and run
    `python3 scripts/build_dashboard.py findings.json out.html`
    (set `meta.lang` to `en` or `ja`), then open it in the browser

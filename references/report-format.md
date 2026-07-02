@@ -112,3 +112,24 @@ verify → delete later.
   domain's grade to E (red-flag override).
 - `red_flags[]`: strings shown in the RED FLAGS box.
 - Scoring model and organ mapping: see `scoring.md`.
+
+## Action plan input (prescriptions)
+
+```json
+{
+  "actions": [
+    {"id": "RX-01", "phase": "Phase 2", "phase_when": "shown once per phase header",
+     "title": "what to do", "effect": "expected effect (e.g. -10,000tk/session)",
+     "effort": "30 min", "risk": "safe | careful | surgery",
+     "steps": ["1-3 bullet steps"],
+     "prompt": "ready-to-paste prompt for Claude Code that executes this one fix safely"}
+  ]
+}
+```
+
+- Rendered as checkable cards grouped by phase; checkbox state persists in the
+  browser (localStorage). Each card carries a copy button for its prompt.
+- Prompts must bake in the safety order (backup → quarantine → verify) and end
+  with a reporting instruction, so pasting one is always safe.
+- risk: `safe` (reversible) / `careful` (shared state) / `surgery` (do it with
+  the user present).

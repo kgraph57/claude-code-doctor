@@ -46,6 +46,11 @@ LABELS = {
         "overall": "Overall",
         "grades": {"A": "Healthy", "B": "Minor findings", "C": "Watch",
                    "D": "Needs work", "E": "Treat now"},
+        "actions_t": "The prescription: action plan",
+        "actions_d": "Each item carries a ready-to-paste prompt for Claude Code. Check off as you go (saved in your browser).",
+        "rx_show": "Show the prompt to paste into Claude Code",
+        "rx_copy": "Copy prompt", "rx_copied": "Copied",
+        "risk": {"safe": "safe", "careful": "careful", "surgery": "surgery"},
         "domains_t": "All {n} findings by domain",
         "domains_d": "Each finding pairs evidence with a proposal. Nothing has been executed.",
         "fact": "Evidence", "rec": "Proposal",
@@ -67,6 +72,11 @@ LABELS = {
         "overall": "総合判定",
         "grades": {"A": "異常なし", "B": "軽度所見", "C": "要経過観察",
                    "D": "要精密検査", "E": "要治療"},
+        "actions_t": "処方箋 ── アクションプラン",
+        "actions_d": "各項目に、そのままClaude Codeへ貼れる実行プロンプト付き。チェックはブラウザに保存されます。",
+        "rx_show": "Claude Codeに貼るプロンプトを表示",
+        "rx_copy": "処方箋をコピー", "rx_copied": "コピーしました",
+        "risk": {"safe": "安全", "careful": "要注意", "surgery": "手術"},
         "domains_t": "全指摘 {n}件（領域別）",
         "domains_d": "各指摘は「事実」と「提案」のペア。提案は未実行。",
         "fact": "事実", "rec": "提案",
@@ -265,6 +275,40 @@ pre.tree{font-family:"SF Mono",Menlo,monospace;font-size:12px;line-height:1.75;
 .figure{display:flex;justify-content:center}
 .figure svg{width:220px;height:auto}
 @media(max-width:860px){.bodymap{grid-template-columns:1fr}.figure{order:-1}}
+/* prescription */
+.rxphase{font-family:"Helvetica Neue",Inter,sans-serif;font-size:13px;
+  letter-spacing:.14em;color:var(--teal);font-weight:700;margin:34px 0 14px;
+  padding-bottom:8px;border-bottom:1px solid var(--ink)}
+.rxphase:first-of-type{margin-top:0}
+.rxphase small{color:var(--sub);font-weight:400;letter-spacing:0;margin-left:12px}
+.rx{border:1px solid var(--line);margin-bottom:12px;background:var(--bg)}
+.rxhead{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;
+  flex-wrap:wrap}
+.rxhead input{width:17px;height:17px;accent-color:var(--teal);flex-shrink:0}
+.rxid{font-family:"Helvetica Neue",Inter,sans-serif;font-size:12px;font-weight:700;
+  color:var(--faint)}
+.rxtitle{font-size:14.5px;font-weight:700;flex:1;min-width:200px}
+.rx.done .rxtitle{text-decoration:line-through;color:var(--faint)}
+.rxeffect{font-family:"Helvetica Neue",Inter,sans-serif;font-size:12px;font-weight:700;
+  color:var(--teal);white-space:nowrap}
+.chip.risk.safe{color:var(--teal);border:1px solid var(--teal)}
+.chip.risk.careful{color:var(--ink);border:1px solid var(--ink)}
+.chip.risk.surgery{color:#fff;background:var(--orange)}
+.rxsteps{list-style:none;padding:0 18px 4px 46px;font-size:13px;color:#333}
+.rxsteps li{padding:3px 0 3px 14px;position:relative;line-height:1.7}
+.rxsteps li::before{content:"";position:absolute;left:0;top:12px;width:5px;height:5px;
+  background:var(--teal)}
+.rxprompt{margin:6px 18px 16px 46px}
+.rxprompt summary{font-size:12px;color:var(--sub);cursor:pointer;list-style:none}
+.rxprompt summary::-webkit-details-marker{display:none}
+.rxprompt summary::before{content:"+ ";color:var(--teal);font-weight:700}
+.rxprompt[open] summary::before{content:"\2212 "}
+.rxprompt pre{font-family:"SF Mono",Menlo,monospace;font-size:12px;line-height:1.8;
+  background:var(--panel);border:1px solid var(--line);padding:16px 18px;
+  white-space:pre-wrap;margin:10px 0 8px}
+.copybtn{font:inherit;font-size:12px;padding:6px 16px;border:1px solid var(--teal);
+  background:var(--bg);color:var(--teal);cursor:pointer;font-weight:600}
+.copybtn:hover{background:var(--teal);color:#fff}
 .controls{margin-bottom:22px}
 .controls button{font:inherit;font-size:12px;padding:6px 14px;border:1px solid var(--line);
   background:var(--bg);cursor:pointer;color:var(--sub)}
@@ -285,6 +329,24 @@ def esc(s):
 def section(num, title, desc, body):
     return (f'<section><p class="snum">SECTION {num:02d}</p><h2>{esc(title)}</h2>'
             f'<p class="sdesc">{esc(desc)}</p>{body}</section>')
+
+
+RX_JS = """
+document.querySelectorAll('.copybtn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var pre=b.parentElement.querySelector('pre');
+    navigator.clipboard.writeText(pre.textContent).then(function(){
+      var t=b.textContent;b.textContent=b.dataset.copied||'Copied';
+      setTimeout(function(){b.textContent=t;},1600);});});});
+var KEY='ccd-rx-'+location.pathname;
+var saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){}
+document.querySelectorAll('.rx').forEach(function(rx){
+  var id=rx.dataset.rx,cb=rx.querySelector('input');
+  if(saved[id]){cb.checked=true;rx.classList.add('done');}
+  cb.addEventListener('change',function(){
+    rx.classList.toggle('done',cb.checked);saved[id]=cb.checked;
+    localStorage.setItem(KEY,JSON.stringify(saved));});});
+"""
 
 
 def build(data):
@@ -412,6 +474,36 @@ def build(data):
             for key, c in data["matrix"].items()) + "</div>"
         parts.append(section(n, L["matrix_t"], L["matrix_d"], body))
 
+    if data.get("actions"):
+        n += 1
+        rows = []
+        prev_phase = None
+        for a in data["actions"]:
+            ph = a.get("phase", "")
+            if ph != prev_phase:
+                when = f'<small>{esc(a.get("phase_when", ""))}</small>' if a.get("phase_when") else ""
+                rows.append(f'<h3 class="rxphase">{esc(ph)}{when}</h3>')
+                prev_phase = ph
+            steps = "".join(f"<li>{esc(st)}</li>" for st in a.get("steps", []))
+            prompt = ""
+            if a.get("prompt"):
+                prompt = (f'<details class="rxprompt"><summary>{L["rx_show"]}</summary>'
+                          f'<pre>{esc(a["prompt"])}</pre>'
+                          f'<button class="copybtn" type="button" data-copied="{esc(L["rx_copied"])}">{L["rx_copy"]}</button>'
+                          f'</details>')
+            risk = a.get("risk", "safe")
+            rows.append(
+                f'<div class="rx" data-rx="{esc(a.get("id", ""))}">'
+                f'<label class="rxhead"><input type="checkbox">'
+                f'<span class="rxid">{esc(a.get("id", ""))}</span>'
+                f'<span class="rxtitle">{esc(a.get("title", ""))}</span>'
+                f'<span class="chip risk {esc(risk)}">{esc(L["risk"].get(risk, risk))}</span>'
+                f'<span class="chip eff">{esc(a.get("effort", ""))}</span>'
+                f'<span class="rxeffect">{esc(a.get("effect", ""))}</span></label>'
+                f'{"<ul class=\"rxsteps\">" + steps + "</ul>" if steps else ""}'
+                f'{prompt}</div>')
+        parts.append(section(n, L["actions_t"], L["actions_d"], "".join(rows)))
+
     if data.get("phases"):
         n += 1
         body = "".join(
@@ -470,7 +562,8 @@ def build(data):
     return (f'<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">'
             f'<meta name="viewport" content="width=device-width, initial-scale=1.0">'
             f'<title>{esc(meta.get("title", "環境監査"))}</title><style>{CSS}</style></head>'
-            f'<body><div class="wrap">{"".join(parts)}</div></body></html>')
+            f'<body><div class="wrap">{"".join(parts)}</div>'
+            f'<script>{RX_JS}</script></body></html>')
 
 
 def main():
