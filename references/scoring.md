@@ -4,7 +4,11 @@ The checkup decomposes a Claude Code setup into **10 body systems**, scores each
 0-100, converts scores to the five checkup grades (A-E), and lets **red flags**
 override everything. This file is the single source of truth for that model.
 
-## 1. Decomposition: domain → organ → checkpoints
+## 1. Decomposition: domain → checkpoints (organ metaphor optional)
+
+The organ column below is **optional flavor** for shareable body-map reports.
+By default, reports use plain domain names (omit `organ`, set a `short` label
+for radar axes); the human-figure rendering only appears when organs are given.
 
 | # | Domain | Organ (metaphor) | What it stands for |
 |---|--------|------------------|--------------------|

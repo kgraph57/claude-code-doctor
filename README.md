@@ -63,7 +63,7 @@ or simply `/doctor`. The skill first confirms the scan scope and your **no-go pa
 
 ## What you get
 
-**A checkup report, like the one from your annual physical.** Your setup is examined as a body — CLAUDE.md is the brain, settings the heart, MCP the blood vessels, disk the body fat. Each system gets a 0-100 score and an A-E grade (A "healthy" through E "treat now"), plotted on a 10-axis radar chart. Critical dangers — plaintext credentials, private files tracked by git — are **red flags** that force a failing grade no matter the arithmetic. The scoring model is fully documented in [`references/scoring.md`](references/scoring.md):
+**A checkup report, like the one from your annual physical.** Each of the ten domains gets a 0-100 score and an A-E grade (A "healthy" through E "treat now"), plotted on a 10-axis radar chart. An optional body-map mode adds the organ metaphor (CLAUDE.md as the brain, settings as the heart) for shareable reports — plain domain names by default. Critical dangers — plaintext credentials, private files tracked by git — are **red flags** that force a failing grade no matter the arithmetic. The scoring model is fully documented in [`references/scoring.md`](references/scoring.md):
 
 <img src="docs/examples/checkup.png" alt="Checkup report: overall grade D 35/100, radar chart of ten body systems, red flags box, body map with per-organ grades" width="100%">
 

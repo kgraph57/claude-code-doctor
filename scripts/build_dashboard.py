@@ -99,7 +99,7 @@ def radar_svg(systems):
         axes.append(f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#e3e5e7" stroke-width="1"/>')
         lx, ly = pt(i, 1.22)
         anchor = "middle" if abs(lx - cx) < 12 else ("start" if lx > cx else "end")
-        label = html.escape(str(sy.get("organ", ""))[:18])
+        label = html.escape(str(sy.get("organ") or sy.get("short") or sy.get("domain", ""))[:18])
         labels.append(f'<text x="{lx:.1f}" y="{ly:.1f}" font-size="10.5" fill="#5c6166" '
                       f'text-anchor="{anchor}" dominant-baseline="middle">{label}</text>')
     data_pts = " ".join(
@@ -243,6 +243,7 @@ pre.tree{font-family:"SF Mono",Menlo,monospace;font-size:12px;line-height:1.75;
 .overallrow .ol{font-size:11px;letter-spacing:.16em;color:var(--teal);font-weight:700;
   font-family:"Helvetica Neue",Inter,sans-serif;margin-bottom:6px}
 .bodymap{display:grid;grid-template-columns:1fr 250px 1fr;gap:0 26px;align-items:center}
+.bodymap.plain{grid-template-columns:1fr 1fr;gap:14px 26px;align-items:start}
 .syscol{display:flex;flex-direction:column;gap:14px}
 .sys{border:1px solid var(--line);padding:14px 16px;display:grid;
   grid-template-columns:44px 1fr;gap:14px;align-items:center;background:var(--bg)}
@@ -334,13 +335,16 @@ def build(data):
 
         def chip(sy):
             g = sy["grade"]
+            organ = (f'<div class="organ">{esc(sy["organ"])}</div>'
+                     if sy.get("organ") else "")
             return (f'<div class="sys"><div class="gbadge g-{g}">{g}</div><div>'
-                    f'<div class="organ">{esc(sy.get("organ", ""))}</div>'
+                    f'{organ}'
                     f'<div class="dn">{esc(sy.get("domain", ""))}</div>'
                     f'<div class="gl">{esc(L["grades"][g])}<i>{sy["score"]}/100</i></div></div>'
                     + (f'<div class="note">{esc(sy["note"])}</div>' if sy.get("note") else "")
                     + '</div>')
 
+        use_figure = any(sy.get("organ") for sy in systems)
         half = (len(systems) + 1) // 2
         left = "".join(chip(sy) for sy in systems[:half])
         right = "".join(chip(sy) for sy in systems[half:])
@@ -368,9 +372,12 @@ def build(data):
                 f'<p>{esc(ck.get("comment", ""))}</p>'
                 f'<div class="radar">{radar_svg(systems)}</div></div>'
                 + rf_html
-                + f'<div class="bodymap"><div class="syscol">{left}</div>'
-                f'<div class="figure">{svg}</div>'
-                f'<div class="syscol">{right}</div></div>')
+                + (f'<div class="bodymap"><div class="syscol">{left}</div>'
+                   f'<div class="figure">{svg}</div>'
+                   f'<div class="syscol">{right}</div></div>'
+                   if use_figure else
+                   f'<div class="bodymap plain"><div class="syscol">{left}</div>'
+                   f'<div class="syscol">{right}</div></div>'))
         parts.append(section(n, L["checkup_t"], L["checkup_d"], body))
 
     if data.get("decisions"):
