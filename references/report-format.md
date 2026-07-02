@@ -160,6 +160,17 @@ The generated plan is documentation, not a scanner. It maps the ten domains to
 read-only PowerShell commands and names forbidden mutations such as `Set-Item`,
 `Remove-Item`, registry writes, and `schtasks /Change` or `/Delete`.
 
+## Linux probe-plan input
+
+```bash
+python3 scripts/build_linux_probe_plan.py linux-probe-plan.md
+```
+
+The generated plan is documentation, not a scanner. It maps the ten domains to
+read-only shell commands and names forbidden mutations such as `rm`, `mv`,
+`chmod`, package-manager changes, `systemctl start/stop/enable/disable`, and
+`crontab -e`.
+
 ## Walkthrough input
 
 ```bash

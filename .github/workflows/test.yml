@@ -45,5 +45,8 @@ jobs:
       - name: Build Windows probe plan
         run: python scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md
 
+      - name: Build Linux probe plan
+        run: python scripts/build_linux_probe_plan.py /tmp/claude-code-doctor-linux.md
+
       - name: Build walkthrough
         run: python scripts/build_walkthrough.py docs/generated-demo

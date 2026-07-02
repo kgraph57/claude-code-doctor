@@ -52,9 +52,9 @@ class WindowsProbePlanTests(unittest.TestCase):
         self.assertIn("Windows coverage is beta", docs)
         self.assertIn("Get-ScheduledTask", domains)
         self.assertIn("PowerShell", skill)
-        self.assertIn("Current release: **v0.9.0**", readme)
+        self.assertIn("Current release: **v0.10.0**", readme)
         self.assertIn("Windows beta probe plan", readme)
-        self.assertIn("現在のリリース: **v0.9.0**", readme_ja)
+        self.assertIn("現在のリリース: **v0.10.0**", readme_ja)
         self.assertIn("Windows beta probe plan", readme_ja)
 
 

@@ -13,7 +13,7 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.md")
 
         for needle in [
-            "Current release: **v0.9.0**",
+            "Current release: **v0.10.0**",
             "## Paste This Into Claude Code",
             "## Demo In 10 Seconds",
             "## 60-Second Walkthrough",
@@ -21,6 +21,7 @@ class PublicSurfaceTests(unittest.TestCase):
             "## CI Budget Gate",
             "## Community Domain Packs",
             "## Cross-Harness Checkups",
+            "## Linux Beta",
             "## Windows Beta",
             "## Why Star This Repo?",
             "docs/roadmap.md",
@@ -29,6 +30,7 @@ class PublicSurfaceTests(unittest.TestCase):
             "scripts/check_budgets.py samples/diff-before.json samples/budgets.json",
             "scripts/validate_domain_pack.py domain-packs/security-team.md",
             "scripts/validate_adapter_notes.py docs/adapters/*.md",
+            "scripts/build_linux_probe_plan.py /tmp/claude-code-doctor-linux.md",
             "scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md",
             "scripts/build_walkthrough.py docs/generated-demo",
         ]:
@@ -39,7 +41,7 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.ja.md")
 
         for needle in [
-            "現在のリリース: **v0.9.0**",
+            "現在のリリース: **v0.10.0**",
             "## Claude Codeに貼る",
             "## 10秒デモ",
             "## 60秒ウォークスルー",
@@ -47,6 +49,7 @@ class PublicSurfaceTests(unittest.TestCase):
             "## CI予算ゲート",
             "## コミュニティ領域パック",
             "## ハーネス横断チェックアップ",
+            "## Linux beta",
             "## Windows beta",
             "## なぜスターするか",
             "docs/roadmap.md",
@@ -55,18 +58,19 @@ class PublicSurfaceTests(unittest.TestCase):
             "scripts/check_budgets.py samples/diff-before.json samples/budgets.json",
             "scripts/validate_domain_pack.py domain-packs/security-team.md",
             "scripts/validate_adapter_notes.py docs/adapters/*.md",
+            "scripts/build_linux_probe_plan.py /tmp/claude-code-doctor-linux.md",
             "scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md",
             "scripts/build_walkthrough.py docs/generated-demo",
         ]:
             self.assertIn(needle, readme)
         self.assertNotIn("cards.html", readme)
 
-    def test_changelog_leads_with_v090(self):
+    def test_changelog_leads_with_v0100(self):
         changelog = self.read("CHANGELOG.md")
 
-        self.assertLess(changelog.index("## v0.9.0"), changelog.index("## v0.8.0"))
-        self.assertIn("60-second walkthrough", changelog)
-        self.assertIn("build_walkthrough.py", changelog)
+        self.assertLess(changelog.index("## v0.10.0"), changelog.index("## v0.9.0"))
+        self.assertIn("Linux beta coverage", changelog)
+        self.assertIn("build_linux_probe_plan.py", changelog)
 
     def test_roadmap_names_next_public_milestones(self):
         roadmap = self.read("docs/roadmap.md")
@@ -76,6 +80,7 @@ class PublicSurfaceTests(unittest.TestCase):
             "v0.5.0 - CI Budget Gate",
             "v0.6.0 - Community Domain Packs",
             "v0.7.0 - Cross-Harness Checkups",
+            "v0.10.0 - Linux Beta Coverage",
             "What We Will Not Build",
         ]:
             self.assertIn(needle, roadmap)
@@ -89,6 +94,7 @@ class PublicSurfaceTests(unittest.TestCase):
         self.assertIn("scripts/check_budgets.py samples/diff-before.json samples/budgets.json", workflow)
         self.assertIn("scripts/validate_domain_pack.py domain-packs/*.md", workflow)
         self.assertIn("scripts/validate_adapter_notes.py docs/adapters/*.md", workflow)
+        self.assertIn("scripts/build_linux_probe_plan.py /tmp/claude-code-doctor-linux.md", workflow)
         self.assertIn("scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md", workflow)
         self.assertIn("scripts/build_walkthrough.py docs/generated-demo", workflow)
 
@@ -114,6 +120,7 @@ class PublicSurfaceTests(unittest.TestCase):
             "docs/adapters/codex.md",
             "docs/adapters/cursor.md",
             "docs/adapters/opencode.md",
+            "docs/linux.md",
             "docs/windows.md",
             "docs/walkthrough.md",
             "docs/generated-demo/demo-walkthrough.md",

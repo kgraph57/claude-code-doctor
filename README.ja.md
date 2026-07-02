@@ -15,7 +15,7 @@
 
 *Claude Code環境に潜む文脈税、死に権限、MCP肥大、ゾンビ自動化を見つける。*
 
-現在のリリース: **v0.9.0** — 60秒ウォークスルー生成、Windows beta probe plan、ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モードを含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
+現在のリリース: **v0.10.0** — Linux beta probe plan、60秒ウォークスルー生成、Windows beta probe plan、ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モードを含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
 
 </div>
 
@@ -127,6 +127,17 @@ python3 scripts/validate_adapter_notes.py docs/adapters/*.md
 
 adapterは、context tax、permission drift、tool tax、automation drift、red flag、prescriptionという共通語彙で揃えます。詳細は [docs/cross-harness.md](docs/cross-harness.md)。
 
+## Linux beta
+
+Linux/WSLをスキャンする前に、review可能なread-only shell planを生成できます。
+
+```bash
+python3 scripts/build_linux_probe_plan.py /tmp/claude-code-doctor-linux.md
+open /tmp/claude-code-doctor-linux.md
+```
+
+10領域を `find`、`du`、`crontab -l`、`systemctl --user list-timers`、`ss -ltnp` などの安全な読取probeへ対応させます。詳細は [docs/linux.md](docs/linux.md)。
+
 ## Windows beta
 
 Windowsをスキャンする前に、review可能なread-only PowerShell planを生成できます。
@@ -148,7 +159,7 @@ git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/cl
 
 > 必要環境: 監査とMarkdownレポートは追加依存なし。HTMLダッシュボードはPython標準ライブラリのみ。共有カードPNG（任意機能）だけheadless Chrome/ChromiumとPillowが必要。
 >
-> **Linux**: 監査とダッシュボードはそのまま動きます（領域9はlaunchdの代わりにcron/systemdタイマーを確認。plutil系はmacOS限定）。**Windows**: beta coverageとしてread-only PowerShell probe planを用意しています。詳細は [docs/windows.md](docs/windows.md)。
+> **Linux**: beta coverageとしてread-only shell probe planを用意しています。詳細は [docs/linux.md](docs/linux.md)。領域9はlaunchdの代わりにcron/systemdタイマーを確認し、plutil系はmacOS限定です。**Windows**: beta coverageとしてread-only PowerShell probe planを用意しています。詳細は [docs/windows.md](docs/windows.md)。
 
 ## なぜスターするか
 
@@ -272,6 +283,7 @@ AIワークスペース健康診断は、掃除スクリプトではありませ
 - [x] 健康スコア（0〜100点）・A〜E判定・レーダーチャート・レッドフラグ ── 実装済み
 - [x] 60秒ウォークスルー生成とcapture page ── 実装済み
 - [x] 差分モード: 前回の健診との比較（健診の本命）── 実装済み
+- [x] Linux path coverage beta: read-only shell probe plan ── 実装済み
 - [x] Windows path coverage beta: read-only PowerShell probe plan ── 実装済み
 - [x] CIモード: 常時ロード税が予算を超えたらPRを落とす ── 実装済み
 - [x] コミュニティ製チェック項目パック（validated Markdown pack）── 実装済み

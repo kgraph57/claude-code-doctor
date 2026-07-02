@@ -26,7 +26,13 @@ Write the report, dashboard and all conversation output in the user's language.
    permission deny rules for hard guarantees.
 1. **The diagnosis phase is strictly read-only.** Never use Write / Edit / mkdir / mv /
    rm / any git-mutating command. Allowed: ls / find / du / wc / head / grep / cat /
-   stat / plutil -p / git status / git log / git ls-files, plus the Read / Grep / Glob tools.
+   stat / plutil -p / git status / git log / git ls-files, plus Linux read-only
+   probes such as `crontab -l`, `systemctl --user list-timers --all --no-pager`,
+   `systemctl --user list-unit-files --type=timer --no-pager`, and `ss -ltnp`;
+   plus the Read / Grep / Glob tools.
+   On Linux, never run `rm`, `mv`, `mkdir`, `touch`, `chmod`, `chown`, `sed -i`,
+   package-manager commands, `systemctl start` / `stop` / `enable` / `disable`,
+   or `crontab -e`.
    On Windows, use read-only PowerShell probes such as `Get-ChildItem`,
    `Get-Content -TotalCount`, `Get-ScheduledTask`, `schtasks /Query`, and
    `git status`; never run `Set-Item`, `Remove-Item`, `New-Item`, `Move-Item`,
@@ -68,6 +74,16 @@ python3 scripts/build_windows_probe_plan.py windows-probe-plan.md
 
 Then ask the user to approve the no-go paths and output location before running
 any PowerShell command from that plan.
+
+Linux coverage is beta. If the scan is on Linux or WSL, generate a reviewable
+shell probe plan first:
+
+```bash
+python3 scripts/build_linux_probe_plan.py linux-probe-plan.md
+```
+
+Then ask the user to approve the no-go paths and output location before running
+any shell command from that plan.
 
 Embed the counts and sizes you find into each domain prompt (agents wander less
 when given concrete targets).

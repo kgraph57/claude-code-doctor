@@ -15,7 +15,7 @@
 
 *Find the context tax, dead permissions, MCP bloat, and zombie automations hiding in your Claude Code setup.*
 
-Current release: **v0.9.0** — 60-second walkthrough generator, Windows beta probe plan, Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, and Diff Mode. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **v0.10.0** — Linux beta probe plan, 60-second walkthrough generator, Windows beta probe plan, Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, and Diff Mode. See [CHANGELOG.md](CHANGELOG.md).
 
 </div>
 
@@ -137,6 +137,19 @@ python3 scripts/validate_adapter_notes.py docs/adapters/*.md
 Adapters keep the same vocabulary for context tax, permission drift, tool tax,
 automation drift, red flags, and prescriptions. See [docs/cross-harness.md](docs/cross-harness.md).
 
+## Linux Beta
+
+Generate a reviewable read-only shell plan before scanning Linux or WSL:
+
+```bash
+python3 scripts/build_linux_probe_plan.py /tmp/claude-code-doctor-linux.md
+open /tmp/claude-code-doctor-linux.md
+```
+
+The plan maps all 10 domains to Linux-safe probes such as `find`, `du`,
+`crontab -l`, `systemctl --user list-timers`, and `ss -ltnp`. See
+[docs/linux.md](docs/linux.md).
+
 ## Windows Beta
 
 Generate a reviewable read-only PowerShell plan before scanning Windows:
@@ -161,7 +174,7 @@ keeping repos elsewhere? clone anywhere and symlink instead).
 
 > Requirements: none for the audit and Markdown report. The HTML dashboard uses only the Python standard library. Share-card PNGs (optional) need headless Chrome/Chromium + Pillow.
 >
-> **Linux**: the audit and dashboard work as-is (domain 9 swaps launchd for cron/systemd timers; `plutil` checks are macOS-only). Share cards work with Chromium. **Windows**: beta coverage is available as a read-only PowerShell probe plan — see [docs/windows.md](docs/windows.md).
+> **Linux**: beta coverage is available as a read-only shell probe plan — see [docs/linux.md](docs/linux.md). Domain 9 swaps launchd for cron/systemd timers, and `plutil` checks are macOS-only. Share cards work with Chromium. **Windows**: beta coverage is available as a read-only PowerShell probe plan — see [docs/windows.md](docs/windows.md).
 
 ## Why Star This Repo?
 
@@ -300,6 +313,7 @@ Yes — reports and the dashboard follow your language (<code>meta.lang: "en" | 
 - [x] Health score (0-100), A-E grades, radar chart, red flags — shipped
 - [x] 60-second walkthrough generator and capture page — shipped
 - [x] Diff mode: compare against your last checkup (the real point of a checkup) — shipped
+- [x] Linux path coverage beta: read-only shell probe plan — shipped
 - [x] Windows path coverage beta: read-only PowerShell probe plan — shipped
 - [x] CI mode: fail a PR when the always-on token tax crosses a budget — shipped
 - [x] Community domain packs: add your own checks via validated Markdown packs — shipped

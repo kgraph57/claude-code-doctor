@@ -48,8 +48,10 @@ class BuildWalkthroughTests(unittest.TestCase):
         readme_ja = (ROOT / "README.ja.md").read_text(encoding="utf-8")
         workflow = (ROOT / ".github" / "workflows" / "test.yml").read_text(encoding="utf-8")
 
-        self.assertIn("Current release: **v0.9.0**", readme)
-        self.assertIn("現在のリリース: **v0.9.0**", readme_ja)
+        self.assertIn("Current release: **v0.10.0**", readme)
+        self.assertIn("60-second walkthrough generator", readme)
+        self.assertIn("現在のリリース: **v0.10.0**", readme_ja)
+        self.assertIn("60秒ウォークスルー生成", readme_ja)
         self.assertIn("## 60-Second Walkthrough", readme)
         self.assertIn("## 60秒ウォークスルー", readme_ja)
         self.assertIn("scripts/build_walkthrough.py docs/generated-demo", workflow)

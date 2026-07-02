@@ -77,6 +77,20 @@ HTML capture page, so a GIF or short video can be recorded without improvising.
   packs, adapters, and Windows beta probes.
 - Keep the demo fixture-based and fictional-data-only.
 
+## v0.10.0 - Linux Beta Coverage
+
+Shipped in this release. Linux and WSL support now starts with the same
+reviewable-plan pattern as Windows: safe shell probes first, explicit no-go
+paths before execution, and no mutating commands.
+
+- Generate `docs/linux.md` with `scripts/build_linux_probe_plan.py`.
+- Map all ten audit domains to Linux-safe probes.
+- Cover cron, user systemd timers, listener inventory, config sizes, and
+  `.claude` metadata without reading transcript contents.
+- Explicitly forbid destructive shell commands, package-manager changes,
+  `systemctl start/stop/enable/disable`, and `crontab -e`.
+- Keep Linux marked beta until a real Linux checkup report is contributed.
+
 ## What We Will Not Build
 
 - No default auto-fix mode. Diagnosis and treatment stay separate.

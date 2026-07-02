@@ -12,7 +12,9 @@ You are one auditor on a Claude Code setup-audit team. Operate strictly READ-ONL
 【Absolutely forbidden】
 - Any mutating operation: Write/Edit/mkdir/mv/rm/touch/git commit etc.
   Allowed: read-only commands (ls/find/du/wc/head/grep/cat/stat/plutil -p [macOS]/
-  git status/log/ls-files; Windows PowerShell: Get-ChildItem/Get-Content -TotalCount/
+  git status/log/ls-files; Linux shell: crontab -l/systemctl --user list-timers
+  --all --no-pager/systemctl --user list-unit-files --type=timer --no-pager/
+  ss -ltnp; Windows PowerShell: Get-ChildItem/Get-Content -TotalCount/
   Get-ScheduledTask/schtasks /Query/Get-NetTCPConnection) and the Read/Grep/Glob tools.
 - User-designated no-go paths: {EXCLUDED_PATHS}. Never enter, read, or traverse
   them with find.
@@ -38,6 +40,9 @@ Checks:
 - Desktop / Downloads / Documents backlog, classified by age and type
 - Dead hidden dot-folders (alive or abandoned, judged by mtime)
 - Size measurements (`du`, skipping cloud mounts)
+- Linux beta: inspect `$HOME`, Desktop, Downloads, `$HOME/.claude`, and
+  `$HOME/.config` with `ls`, `find`, `du`, and metadata-only output. Apply
+  no-go exclusions to every `find` command before running it.
 - Windows beta: inspect `$env:USERPROFILE`, Desktop, Downloads, `$env:APPDATA`
   and `$env:LOCALAPPDATA` with `Get-ChildItem`; metadata only unless reading
   explicit Claude Code configuration files.
@@ -116,10 +121,12 @@ Checks:
 
 Checks:
 - launchd/cron/scheduler inventory (macOS: launchctl + plutil -p; Linux:
-  crontab -l + systemctl --user list-timers; Windows beta: `Get-ScheduledTask`
-  + `schtasks /Query /FO LIST /V`): does every referenced script exist / zombies
-  pointing at vanished paths (failing silently every day) / backup plists that could
-  be accidentally re-enabled / logs growing without rotation
+  `crontab -l` + `systemctl --user list-timers --all --no-pager` +
+  `systemctl --user list-unit-files --type=timer --no-pager`; Windows beta:
+  `Get-ScheduledTask` + `schtasks /Query /FO LIST /V`): does every referenced
+  script exist / zombies pointing at vanished paths (failing silently every day) /
+  backup plists or timer units that could be accidentally re-enabled / logs
+  growing without rotation
 - Orphan scripts called by nothing
 - Git: commit-convention adherence in recent history / unmerged and stale branches /
   presence of a CI net (types, lint, tests)

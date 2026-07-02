@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.10.0 - 2026-07-02
+
+This release ships Linux beta coverage: a read-only shell probe plan for Linux
+and WSL setup checkups.
+
+### Added
+
+- `scripts/build_linux_probe_plan.py` for generating a Linux read-only probe
+  plan.
+- `docs/linux.md` generated from the probe-plan builder.
+- Linux-safe read-only command guidance in `SKILL.md` and
+  `references/domains.md`.
+- CI coverage for the Linux probe-plan generator.
+
+### Changed
+
+- README and README.ja now include a Linux beta quick command.
+- Roadmap now marks Linux beta coverage as shipped.
+
 ## v0.9.0 - 2026-07-02
 
 This release ships a 60-second walkthrough generator: a repeatable Markdown
