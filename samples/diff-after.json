@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "title": "Sample Audit After Cleanup",
+    "date": "2026-07-02"
+  },
+  "metrics": {
+    "always_on_tokens": 31000,
+    "permissions": 760,
+    "mcp_tools": 64
+  },
+  "checkup": {
+    "red_flags": ["new private file tracked by git"],
+    "systems": [
+      {"domain": "CLAUDE.md hierarchy", "grade": "B", "score": 83},
+      {"domain": "Settings & permissions", "grade": "C", "score": 60},
+      {"domain": "MCP & plugins", "grade": "C", "score": 56}
+    ]
+  },
+  "domains": [
+    {
+      "name": "Settings & permissions",
+      "findings": [
+        {"title": "Dead allow-list entries", "severity": "medium"},
+        {"title": "Private file tracked by git", "severity": "high", "critical": true}
+      ]
+    },
+    {
+      "name": "MCP & plugins",
+      "findings": [
+        {"title": "New MCP tool budget drift", "severity": "medium"}
+      ]
+    }
+  ],
+  "actions": [
+    {"id": "RX-01", "title": "Quarantine stale always-on notes", "done": true},
+    {"id": "RX-02", "title": "Remove dead allow-list entries"},
+    {"id": "RX-04", "title": "Stop tracking the private file"}
+  ]
+}

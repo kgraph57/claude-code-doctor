@@ -15,7 +15,7 @@
 
 *Find the context tax, dead permissions, MCP bloat, and zombie automations hiding in your Claude Code setup.*
 
-Current release: **v0.3.0** — LLM quickstart, 10-second demo, GitHub CI, issue templates, and a public roadmap. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **v0.4.0** — Diff Mode for before/after checkups, plus the v0.3.0 public surface. See [CHANGELOG.md](CHANGELOG.md).
 
 </div>
 
@@ -78,6 +78,19 @@ open /tmp/claude-code-doctor-cards/
 All sample data is fictional. Your real report is generated locally and never
 leaves your machine.
 
+## Diff Mode
+
+The real point of a checkup is the next checkup. Compare two exported reports:
+
+```bash
+python3 scripts/compare_reports.py samples/diff-before.json samples/diff-after.json /tmp/claude-code-doctor-diff.md
+open /tmp/claude-code-doctor-diff.md
+```
+
+The diff report shows score deltas, always-on token drift, permission drift,
+MCP tool drift, resolved/new red flags, finding movement, and prescription
+progress.
+
 ## Quick Start
 
 ```bash
@@ -98,7 +111,7 @@ Star it if you want this to become the standard safety layer for agentic coding
 setups:
 
 - **Monthly checkups**: run the same audit repeatedly, like an annual physical for your AI workspace
-- **Diff mode**: compare your current setup against the last checkup and prove the cleanup worked
+- **Diff mode**: compare your current setup against the last checkup and prove the cleanup worked — shipped in v0.4.0
 - **CI budget gates**: fail a PR when always-on context, permissions, or tool tax drifts past a budget
 - **Community domain packs**: add checks for teams, frameworks, OSes, and security policies without forking the core skill
 - **Cross-harness checkups**: adapt the same protocol to Claude Code, Codex, Cursor, and other agent workbenches
@@ -228,7 +241,7 @@ Yes — reports and the dashboard follow your language (<code>meta.lang: "en" | 
 
 - [x] Health score (0-100), A-E grades, radar chart, red flags — shipped
 - [ ] Demo GIF / 60-second video walkthrough
-- [ ] Diff mode: compare against your last checkup (the real point of a checkup)
+- [x] Diff mode: compare against your last checkup (the real point of a checkup) — shipped
 - [ ] Windows path coverage (Linux mostly works today; see Quick start note)
 - [ ] CI mode: fail a PR when the always-on token tax crosses a budget
 - [ ] Community domain packs: add your own checks via a references/ drop-in

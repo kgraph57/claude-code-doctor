@@ -15,7 +15,7 @@
 
 *Claude Code環境に潜む文脈税、死に権限、MCP肥大、ゾンビ自動化を見つける。*
 
-現在のリリース: **v0.3.0** — LLM向けクイックスタート、10秒デモ、GitHub CI、Issueテンプレート、公開ロードマップを追加。詳細は [CHANGELOG.md](CHANGELOG.md)。
+現在のリリース: **v0.4.0** — 前回/今回の健診を比べる差分モードを追加。v0.3.0の公開導線も含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
 
 </div>
 
@@ -73,6 +73,17 @@ open /tmp/claude-code-doctor-cards/
 
 サンプルデータはすべて架空です。実レポートはローカルで生成され、外には出ません。
 
+## 差分モード
+
+健診の本命は、次の健診です。2つのエクスポート済みレポートを比較できます。
+
+```bash
+python3 scripts/compare_reports.py samples/diff-before.json samples/diff-after.json /tmp/claude-code-doctor-diff.md
+open /tmp/claude-code-doctor-diff.md
+```
+
+差分レポートには、スコア差分、常時ロードtokenの増減、permission drift、MCP tool drift、解決/新規red flag、findingの移動、処方箋の進捗が出ます。
+
 ## クイックスタート
 
 ```bash
@@ -90,7 +101,7 @@ git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/cl
 このリポを、agentic coding環境の標準安全レイヤーに育てたい人はスターしてください。
 
 - **月次健康診断**: AIワークスペースを人間ドックのように繰り返し測る
-- **差分モード**: 前回の健診と比べ、掃除の効果を数字で見る
+- **差分モード**: 前回の健診と比べ、掃除の効果を数字で見る（v0.4.0で実装済み）
 - **CI予算ゲート**: 常時ロード、permissions、tool taxが予算を超えたらPRを止める
 - **コミュニティ領域パック**: チーム、フレームワーク、OS、セキュリティ方針ごとのチェックを追加する
 - **横断チェックアップ**: Claude Code、Codex、Cursor、その他agent workbenchへ同じ診断思想を広げる
@@ -206,7 +217,7 @@ AIワークスペース健康診断は、掃除スクリプトではありませ
 
 - [x] 健康スコア（0〜100点）・A〜E判定・レーダーチャート・レッドフラグ ── 実装済み
 - [ ] デモGIF / 60秒紹介動画
-- [ ] 差分モード: 前回の健診との比較（健診の本命）
+- [x] 差分モード: 前回の健診との比較（健診の本命）── 実装済み
 - [ ] Windows対応（Linuxはおおむね動作。クイックスタートの注記参照）
 - [ ] CIモード: 常時ロード税が予算を超えたらPRを落とす
 - [ ] コミュニティ製チェック項目パック（references/への追加だけで拡張）

@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.4.0 - 2026-07-02
+
+This release ships Diff Mode: the second checkup can now prove what improved,
+what regressed, and what still needs attention.
+
+### Added
+
+- `scripts/compare_reports.py` for comparing two dashboard JSON exports.
+- Fictional before/after fixtures:
+  - `samples/diff-before.json`
+  - `samples/diff-after.json`
+- Markdown diff output covering metric deltas, domain grade/score deltas, red
+  flags, findings, prescription progress, and the next progress prescription.
+- CI coverage for the diff fixtures and compare script.
+
+### Changed
+
+- README and README.ja now include a Diff Mode quick command.
+- Roadmap now marks v0.4.0 Diff Mode as shipped.
+
 ## v0.3.0 - 2026-07-02
 
 This release sharpens the public GitHub surface: a visitor can understand the

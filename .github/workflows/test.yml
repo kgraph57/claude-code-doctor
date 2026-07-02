@@ -23,6 +23,11 @@ jobs:
         run: |
           python -m json.tool samples/dashboard.json >/dev/null
           python -m json.tool samples/share-cards.json >/dev/null
+          python -m json.tool samples/diff-before.json >/dev/null
+          python -m json.tool samples/diff-after.json >/dev/null
 
       - name: Render dashboard fixture
         run: python scripts/build_dashboard.py samples/dashboard.json /tmp/claude-code-doctor-dashboard.html
+
+      - name: Compare diff fixtures
+        run: python scripts/compare_reports.py samples/diff-before.json samples/diff-after.json /tmp/claude-code-doctor-diff.md

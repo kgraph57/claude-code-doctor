@@ -46,6 +46,11 @@
     {"n": "104", "unit": "", "label": "total findings", "tone": "alert"},
     {"n": "45,000", "unit": "tk", "label": "always-on load", "tone": "alert"}
   ],
+  "metrics": {
+    "always_on_tokens": 45000,
+    "permissions": 804,
+    "mcp_tools": 63
+  },
   "decisions": [
     {"q": "decision headline", "why": "1-2 sentence background",
      "options": [{"tag": "OPTION A", "body": "..."}, {"tag": "OPTION B", "body": "..."}]}
@@ -71,7 +76,27 @@
 
 - `meta.lang`: `"en"` (default) or `"ja"` — switches all chrome labels
 - `stats[].tone`: `alert` (orange, problems) / `key` (teal, scale)
+- `metrics`: optional machine-readable counters used by Diff Mode. The renderer
+  ignores this object, but `compare_reports.py` uses it before falling back to
+  heuristics from `stats[]` labels.
 - All sections except `meta` are optional; omitted sections don't render.
+
+## Diff input (before/after comparison)
+
+```bash
+python3 scripts/compare_reports.py before.json after.json diff.md
+```
+
+Diff Mode accepts the same dashboard JSON export. For best results, include:
+
+- `metrics.always_on_tokens`: number of always-loaded tokens.
+- `metrics.permissions`: number of permission/allow-list entries.
+- `metrics.mcp_tools`: number of MCP/plugin tools injected into the session.
+- `checkup.systems[].domain`, `grade`, and `score`.
+- `checkup.red_flags[]`.
+- `domains[].findings[].title`.
+- `actions[].id`, `title`, and optional `done: true` or
+  `status: "completed"` for prescription progress.
 
 ## How to assign the matrix
 

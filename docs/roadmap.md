@@ -16,11 +16,12 @@ Shipped in this release.
 
 ## v0.4.0 - Diff Mode
 
-The real point of a checkup is the next checkup.
+Shipped in this release. The real point of a checkup is the next checkup.
 
-- Compare `before.json` and `after.json` reports.
+- Compare `before.json` and `after.json` reports with `scripts/compare_reports.py`.
 - Show grade deltas, token-tax deltas, permission drift, and tool-count drift.
-- Separate "improved", "unchanged", "regressed", and "new red flag".
+- Separate "improved", "unchanged", "regressed", "new red flag", and
+  "resolved red flag".
 - Generate a progress prescription for the next cleanup session.
 
 ## v0.5.0 - CI Budget Gate

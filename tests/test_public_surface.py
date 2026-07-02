@@ -13,12 +13,14 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.md")
 
         for needle in [
-            "Current release: **v0.3.0**",
+            "Current release: **v0.4.0**",
             "## Paste This Into Claude Code",
             "## Demo In 10 Seconds",
+            "## Diff Mode",
             "## Why Star This Repo?",
             "docs/roadmap.md",
             "actions/workflows/test.yml/badge.svg",
+            "scripts/compare_reports.py samples/diff-before.json samples/diff-after.json",
         ]:
             self.assertIn(needle, readme)
         self.assertNotIn("cards.html", readme)
@@ -27,22 +29,24 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.ja.md")
 
         for needle in [
-            "現在のリリース: **v0.3.0**",
+            "現在のリリース: **v0.4.0**",
             "## Claude Codeに貼る",
             "## 10秒デモ",
+            "## 差分モード",
             "## なぜスターするか",
             "docs/roadmap.md",
             "actions/workflows/test.yml/badge.svg",
+            "scripts/compare_reports.py samples/diff-before.json samples/diff-after.json",
         ]:
             self.assertIn(needle, readme)
         self.assertNotIn("cards.html", readme)
 
-    def test_changelog_leads_with_v030(self):
+    def test_changelog_leads_with_v040(self):
         changelog = self.read("CHANGELOG.md")
 
-        self.assertLess(changelog.index("## v0.3.0"), changelog.index("## v0.2.0"))
-        self.assertIn("LLM Quickstart", changelog)
-        self.assertIn("10-second demo", changelog)
+        self.assertLess(changelog.index("## v0.4.0"), changelog.index("## v0.3.0"))
+        self.assertIn("Diff Mode", changelog)
+        self.assertIn("compare_reports.py", changelog)
 
     def test_roadmap_names_next_public_milestones(self):
         roadmap = self.read("docs/roadmap.md")
@@ -61,11 +65,18 @@ class PublicSurfaceTests(unittest.TestCase):
 
         self.assertIn("python -m unittest discover -s tests", workflow)
         self.assertIn("scripts/build_dashboard.py samples/dashboard.json", workflow)
+        self.assertIn("scripts/compare_reports.py samples/diff-before.json samples/diff-after.json", workflow)
 
         for path in [
             ".github/ISSUE_TEMPLATE/checkup-grade.yml",
             ".github/ISSUE_TEMPLATE/domain-pack.yml",
             ".github/ISSUE_TEMPLATE/bug_report.yml",
+        ]:
+            self.assertTrue((ROOT / path).exists(), path)
+
+        for path in [
+            "samples/diff-before.json",
+            "samples/diff-after.json",
         ]:
             self.assertTrue((ROOT / path).exists(), path)
 

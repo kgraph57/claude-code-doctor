@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "title": "Sample Audit Before Cleanup",
+    "date": "2026-07-01"
+  },
+  "metrics": {
+    "always_on_tokens": 45000,
+    "permissions": 804,
+    "mcp_tools": 63
+  },
+  "checkup": {
+    "red_flags": ["plaintext token shape in scratch note"],
+    "systems": [
+      {"domain": "CLAUDE.md hierarchy", "grade": "C", "score": 55},
+      {"domain": "Settings & permissions", "grade": "B", "score": 82},
+      {"domain": "MCP & plugins", "grade": "C", "score": 58}
+    ]
+  },
+  "domains": [
+    {
+      "name": "CLAUDE.md hierarchy",
+      "findings": [
+        {"title": "Rare workflow notes load every session", "severity": "high"}
+      ]
+    },
+    {
+      "name": "Settings & permissions",
+      "findings": [
+        {"title": "Dead allow-list entries", "severity": "medium"}
+      ]
+    },
+    {
+      "name": "MCP & plugins",
+      "findings": [
+        {"title": "Duplicate MCP server exposes overlapping tools", "severity": "medium"}
+      ]
+    }
+  ],
+  "actions": [
+    {"id": "RX-01", "title": "Quarantine stale always-on notes"},
+    {"id": "RX-02", "title": "Remove dead allow-list entries"},
+    {"id": "RX-03", "title": "Choose one MCP server for overlapping tools"}
+  ]
+}
