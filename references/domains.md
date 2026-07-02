@@ -12,7 +12,8 @@ You are one auditor on a Claude Code setup-audit team. Operate strictly READ-ONL
 【Absolutely forbidden】
 - Any mutating operation: Write/Edit/mkdir/mv/rm/touch/git commit etc.
   Allowed: read-only commands (ls/find/du/wc/head/grep/cat/stat/plutil -p [macOS]/
-  git status/log/ls-files) and the Read/Grep/Glob tools.
+  git status/log/ls-files; Windows PowerShell: Get-ChildItem/Get-Content -TotalCount/
+  Get-ScheduledTask/schtasks /Query/Get-NetTCPConnection) and the Read/Grep/Glob tools.
 - User-designated no-go paths: {EXCLUDED_PATHS}. Never enter, read, or traverse
   them with find.
 - Do not open personal documents or content files. File contents may be read ONLY
@@ -37,6 +38,9 @@ Checks:
 - Desktop / Downloads / Documents backlog, classified by age and type
 - Dead hidden dot-folders (alive or abandoned, judged by mtime)
 - Size measurements (`du`, skipping cloud mounts)
+- Windows beta: inspect `$env:USERPROFILE`, Desktop, Downloads, `$env:APPDATA`
+  and `$env:LOCALAPPDATA` with `Get-ChildItem`; metadata only unless reading
+  explicit Claude Code configuration files.
 
 ## Domain 2: Development repositories
 
@@ -112,7 +116,8 @@ Checks:
 
 Checks:
 - launchd/cron/scheduler inventory (macOS: launchctl + plutil -p; Linux:
-  crontab -l + systemctl --user list-timers): does every referenced script exist / zombies
+  crontab -l + systemctl --user list-timers; Windows beta: `Get-ScheduledTask`
+  + `schtasks /Query /FO LIST /V`): does every referenced script exist / zombies
   pointing at vanished paths (failing silently every day) / backup plists that could
   be accidentally re-enabled / logs growing without rotation
 - Orphan scripts called by nothing

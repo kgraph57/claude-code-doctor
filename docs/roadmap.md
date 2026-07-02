@@ -54,6 +54,17 @@ Shipped in this release. Claude Code is the first target, not the only target.
   automation drift.
 - Harness-specific no-go path and permission guidance.
 
+## v0.8.0 - Windows Beta Coverage
+
+Shipped in this release. Windows support starts with a reviewable read-only
+PowerShell probe plan, not an opaque script.
+
+- Generate `docs/windows.md` with `scripts/build_windows_probe_plan.py`.
+- Map all ten audit domains to Windows-safe probes.
+- Explicitly forbid mutating PowerShell commands, registry writes, and Task
+  Scheduler changes.
+- Keep Windows marked beta until a real Windows checkup report is contributed.
+
 ## What We Will Not Build
 
 - No default auto-fix mode. Diagnosis and treatment stay separate.

@@ -13,13 +13,14 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.md")
 
         for needle in [
-            "Current release: **v0.7.0**",
+            "Current release: **v0.8.0**",
             "## Paste This Into Claude Code",
             "## Demo In 10 Seconds",
             "## Diff Mode",
             "## CI Budget Gate",
             "## Community Domain Packs",
             "## Cross-Harness Checkups",
+            "## Windows Beta",
             "## Why Star This Repo?",
             "docs/roadmap.md",
             "actions/workflows/test.yml/badge.svg",
@@ -27,6 +28,7 @@ class PublicSurfaceTests(unittest.TestCase):
             "scripts/check_budgets.py samples/diff-before.json samples/budgets.json",
             "scripts/validate_domain_pack.py domain-packs/security-team.md",
             "scripts/validate_adapter_notes.py docs/adapters/*.md",
+            "scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md",
         ]:
             self.assertIn(needle, readme)
         self.assertNotIn("cards.html", readme)
@@ -35,13 +37,14 @@ class PublicSurfaceTests(unittest.TestCase):
         readme = self.read("README.ja.md")
 
         for needle in [
-            "現在のリリース: **v0.7.0**",
+            "現在のリリース: **v0.8.0**",
             "## Claude Codeに貼る",
             "## 10秒デモ",
             "## 差分モード",
             "## CI予算ゲート",
             "## コミュニティ領域パック",
             "## ハーネス横断チェックアップ",
+            "## Windows beta",
             "## なぜスターするか",
             "docs/roadmap.md",
             "actions/workflows/test.yml/badge.svg",
@@ -49,16 +52,17 @@ class PublicSurfaceTests(unittest.TestCase):
             "scripts/check_budgets.py samples/diff-before.json samples/budgets.json",
             "scripts/validate_domain_pack.py domain-packs/security-team.md",
             "scripts/validate_adapter_notes.py docs/adapters/*.md",
+            "scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md",
         ]:
             self.assertIn(needle, readme)
         self.assertNotIn("cards.html", readme)
 
-    def test_changelog_leads_with_v070(self):
+    def test_changelog_leads_with_v080(self):
         changelog = self.read("CHANGELOG.md")
 
-        self.assertLess(changelog.index("## v0.7.0"), changelog.index("## v0.6.0"))
-        self.assertIn("Cross-Harness Checkups", changelog)
-        self.assertIn("validate_adapter_notes.py", changelog)
+        self.assertLess(changelog.index("## v0.8.0"), changelog.index("## v0.7.0"))
+        self.assertIn("Windows beta coverage", changelog)
+        self.assertIn("build_windows_probe_plan.py", changelog)
 
     def test_roadmap_names_next_public_milestones(self):
         roadmap = self.read("docs/roadmap.md")
@@ -81,6 +85,7 @@ class PublicSurfaceTests(unittest.TestCase):
         self.assertIn("scripts/check_budgets.py samples/diff-before.json samples/budgets.json", workflow)
         self.assertIn("scripts/validate_domain_pack.py domain-packs/*.md", workflow)
         self.assertIn("scripts/validate_adapter_notes.py docs/adapters/*.md", workflow)
+        self.assertIn("scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md", workflow)
 
         for path in [
             ".github/ISSUE_TEMPLATE/checkup-grade.yml",
@@ -104,6 +109,7 @@ class PublicSurfaceTests(unittest.TestCase):
             "docs/adapters/codex.md",
             "docs/adapters/cursor.md",
             "docs/adapters/opencode.md",
+            "docs/windows.md",
         ]:
             self.assertTrue((ROOT / path).exists(), path)
 

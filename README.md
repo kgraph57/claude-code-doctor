@@ -15,7 +15,7 @@
 
 *Find the context tax, dead permissions, MCP bloat, and zombie automations hiding in your Claude Code setup.*
 
-Current release: **v0.7.0** — Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, Diff Mode, and the v0.3.0 public surface. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **v0.8.0** — Windows beta probe plan, Cross-Harness Checkups, Community Domain Packs, CI Budget Gate, and Diff Mode. See [CHANGELOG.md](CHANGELOG.md).
 
 </div>
 
@@ -126,6 +126,18 @@ python3 scripts/validate_adapter_notes.py docs/adapters/*.md
 Adapters keep the same vocabulary for context tax, permission drift, tool tax,
 automation drift, red flags, and prescriptions. See [docs/cross-harness.md](docs/cross-harness.md).
 
+## Windows Beta
+
+Generate a reviewable read-only PowerShell plan before scanning Windows:
+
+```bash
+python3 scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md
+open /tmp/claude-code-doctor-windows.md
+```
+
+The plan maps all 10 domains to Windows-safe probes such as `Get-ChildItem`,
+`Get-ScheduledTask`, and `schtasks /Query`. See [docs/windows.md](docs/windows.md).
+
 ## Quick Start
 
 ```bash
@@ -138,7 +150,7 @@ keeping repos elsewhere? clone anywhere and symlink instead).
 
 > Requirements: none for the audit and Markdown report. The HTML dashboard uses only the Python standard library. Share-card PNGs (optional) need headless Chrome/Chromium + Pillow.
 >
-> **Linux**: the audit and dashboard work as-is (domain 9 swaps launchd for cron/systemd timers; `plutil` checks are macOS-only). Share cards work with Chromium. **Windows**: not yet tuned — see [docs/roadmap.md](docs/roadmap.md).
+> **Linux**: the audit and dashboard work as-is (domain 9 swaps launchd for cron/systemd timers; `plutil` checks are macOS-only). Share cards work with Chromium. **Windows**: beta coverage is available as a read-only PowerShell probe plan — see [docs/windows.md](docs/windows.md).
 
 ## Why Star This Repo?
 
@@ -277,7 +289,7 @@ Yes — reports and the dashboard follow your language (<code>meta.lang: "en" | 
 - [x] Health score (0-100), A-E grades, radar chart, red flags — shipped
 - [ ] Demo GIF / 60-second video walkthrough
 - [x] Diff mode: compare against your last checkup (the real point of a checkup) — shipped
-- [ ] Windows path coverage (Linux mostly works today; see Quick start note)
+- [x] Windows path coverage beta: read-only PowerShell probe plan — shipped
 - [x] CI mode: fail a PR when the always-on token tax crosses a budget — shipped
 - [x] Community domain packs: add your own checks via validated Markdown packs — shipped
 

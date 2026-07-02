@@ -150,6 +150,16 @@ Each note must include `harness`, `status`, `report_schema`, and the sections
 `Known Gaps`. The permission boundary must explicitly forbid routing around
 guards.
 
+## Windows probe-plan input
+
+```bash
+python3 scripts/build_windows_probe_plan.py windows-probe-plan.md
+```
+
+The generated plan is documentation, not a scanner. It maps the ten domains to
+read-only PowerShell commands and names forbidden mutations such as `Set-Item`,
+`Remove-Item`, registry writes, and `schtasks /Change` or `/Delete`.
+
 ## How to assign the matrix
 
 | Cell | Meaning | When to act |

@@ -27,6 +27,10 @@ Write the report, dashboard and all conversation output in the user's language.
 1. **The diagnosis phase is strictly read-only.** Never use Write / Edit / mkdir / mv /
    rm / any git-mutating command. Allowed: ls / find / du / wc / head / grep / cat /
    stat / plutil -p / git status / git log / git ls-files, plus the Read / Grep / Glob tools.
+   On Windows, use read-only PowerShell probes such as `Get-ChildItem`,
+   `Get-Content -TotalCount`, `Get-ScheduledTask`, `schtasks /Query`, and
+   `git status`; never run `Set-Item`, `Remove-Item`, `New-Item`, `Move-Item`,
+   `Copy-Item`, registry writes, or `schtasks /Change` / `/Delete`.
 2. **The user decides.** Findings are "evidence + proposal". Fixes wait for an explicit GO.
    "Probably fine" or "might be OK" is not approval.
 3. **Confirm no-go paths first.** User-designated excluded paths (personal, patient,
@@ -54,6 +58,16 @@ wc -c ~/.claude/settings.json ~/.claude/CLAUDE.md 2>/dev/null
 ls ~/Library/LaunchAgents/ 2>/dev/null | head -30   # macOS only
 crontab -l 2>/dev/null | head -10
 ```
+
+Windows coverage is beta. If the scan is on Windows, generate a reviewable
+PowerShell probe plan first:
+
+```bash
+python3 scripts/build_windows_probe_plan.py windows-probe-plan.md
+```
+
+Then ask the user to approve the no-go paths and output location before running
+any PowerShell command from that plan.
 
 Embed the counts and sizes you find into each domain prompt (agents wander less
 when given concrete targets).

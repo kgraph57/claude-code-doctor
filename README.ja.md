@@ -15,7 +15,7 @@
 
 *Claude Code環境に潜む文脈税、死に権限、MCP肥大、ゾンビ自動化を見つける。*
 
-現在のリリース: **v0.7.0** — ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モード、v0.3.0の公開導線を含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
+現在のリリース: **v0.8.0** — Windows beta probe plan、ハーネス横断チェックアップ、コミュニティ領域パック、CI予算ゲート、差分モードを含みます。詳細は [CHANGELOG.md](CHANGELOG.md)。
 
 </div>
 
@@ -116,6 +116,17 @@ python3 scripts/validate_adapter_notes.py docs/adapters/*.md
 
 adapterは、context tax、permission drift、tool tax、automation drift、red flag、prescriptionという共通語彙で揃えます。詳細は [docs/cross-harness.md](docs/cross-harness.md)。
 
+## Windows beta
+
+Windowsをスキャンする前に、review可能なread-only PowerShell planを生成できます。
+
+```bash
+python3 scripts/build_windows_probe_plan.py /tmp/claude-code-doctor-windows.md
+open /tmp/claude-code-doctor-windows.md
+```
+
+10領域を `Get-ChildItem`、`Get-ScheduledTask`、`schtasks /Query` などの安全な読取probeへ対応させます。詳細は [docs/windows.md](docs/windows.md)。
+
 ## クイックスタート
 
 ```bash
@@ -126,7 +137,7 @@ git clone https://github.com/kgraph57/claude-code-doctor.git ~/.claude/skills/cl
 
 > 必要環境: 監査とMarkdownレポートは追加依存なし。HTMLダッシュボードはPython標準ライブラリのみ。共有カードPNG（任意機能）だけheadless Chrome/ChromiumとPillowが必要。
 >
-> **Linux**: 監査とダッシュボードはそのまま動きます（領域9はlaunchdの代わりにcron/systemdタイマーを確認。plutil系はmacOS限定）。**Windows**: 未対応（[docs/roadmap.md](docs/roadmap.md) 参照）。
+> **Linux**: 監査とダッシュボードはそのまま動きます（領域9はlaunchdの代わりにcron/systemdタイマーを確認。plutil系はmacOS限定）。**Windows**: beta coverageとしてread-only PowerShell probe planを用意しています。詳細は [docs/windows.md](docs/windows.md)。
 
 ## なぜスターするか
 
@@ -250,7 +261,7 @@ AIワークスペース健康診断は、掃除スクリプトではありませ
 - [x] 健康スコア（0〜100点）・A〜E判定・レーダーチャート・レッドフラグ ── 実装済み
 - [ ] デモGIF / 60秒紹介動画
 - [x] 差分モード: 前回の健診との比較（健診の本命）── 実装済み
-- [ ] Windows対応（Linuxはおおむね動作。クイックスタートの注記参照）
+- [x] Windows path coverage beta: read-only PowerShell probe plan ── 実装済み
 - [x] CIモード: 常時ロード税が予算を超えたらPRを落とす ── 実装済み
 - [x] コミュニティ製チェック項目パック（validated Markdown pack）── 実装済み
 

@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.8.0 - 2026-07-02
+
+This release ships Windows beta coverage: a read-only PowerShell probe plan that
+maps all ten audit domains to reviewable Windows-safe commands.
+
+### Added
+
+- `scripts/build_windows_probe_plan.py` for generating a Windows read-only
+  probe plan.
+- `docs/windows.md` generated from the probe-plan builder.
+- Windows-safe read-only command guidance in `SKILL.md` and
+  `references/domains.md`.
+- CI coverage for the Windows probe-plan generator.
+
+### Changed
+
+- README and README.ja now describe Windows beta coverage instead of marking
+  Windows as untuned.
+
 ## v0.7.0 - 2026-07-02
 
 This release ships Cross-Harness Checkups: adapter notes for applying the same
